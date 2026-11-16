@@ -58,7 +58,8 @@
 
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
-  var fmt = function (n) { return '$' + n.toLocaleString('es-AR'); };
+  // Formato $85.000 igual en todos los navegadores (sin depender de toLocaleString)
+  var fmt = function (n) { return '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
   var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
   var cardById = function (id) { return CARDS.filter(function (c) { return c.id === id; })[0]; };
 
@@ -118,7 +119,7 @@
     $('#products-grid').innerHTML = list.map(function (p) {
       var i = PRODUCTS.indexOf(p);
       var img = p.img
-        ? '<div class="product-img photo"><img src="' + esc(p.img) + '" alt="' + esc(p.name) + '" loading="lazy"></div>'
+        ? '<div class="product-img photo"><img src="' + esc(p.img) + '" width="700" height="875" alt="' + esc(p.name) + '" loading="lazy"></div>'
         : '<div class="product-img"><span>' + esc(p.name.charAt(0)) + '</span></div>';
       var prices = p.price
         ? '<span class="old">' + fmt(p.old) + '</span><span class="price-row"><span class="price">' + fmt(p.price) + '</span><span class="off">' + Math.round((1 - p.price / p.old) * 100) + '% OFF</span></span>'
@@ -144,7 +145,7 @@
   $('#cards-grid').innerHTML = CARDS.map(function (c) {
     return '<button type="button" class="tarot" data-open-card="' + c.id + '" aria-label="' + esc(c.name) + ': ver ' + esc(c.title.toLowerCase()) + '">' +
       '<span class="tarot-outer"><span class="tarot-inner">' +
-      '<img src="img/cartas/' + c.id + '.jpg" alt="Carta del tarot: ' + esc(c.name) + '" loading="lazy">' +
+      '<img src="img/cartas/' + c.id + '.jpg" width="640" height="960" alt="Carta del tarot: ' + esc(c.name) + '" loading="lazy">' +
       '<span class="rule"><span>✦</span></span>' +
       '<span class="tarot-cat">' + esc(c.title.toUpperCase()) + '</span>' +
       '<span class="tarot-sign">INTIMATTA</span>' +
@@ -153,7 +154,9 @@
 
   // ---------- Eventos ----------
   document.addEventListener('click', function (e) {
-    var t = e.target.closest('button, a'); if (!t) return;
+    var t = e.target;
+    while (t && t !== document && !(t.tagName === 'BUTTON' || t.tagName === 'A')) t = t.parentNode;
+    if (!t || t === document) return;
     if (t.hasAttribute('data-open-card')) { openCard(t.getAttribute('data-open-card')); return; }
     if (t.hasAttribute('data-close-catalog')) { closeCatalog(); return; }
     if (t.hasAttribute('data-open-cart')) { openCart(); return; }
@@ -186,7 +189,12 @@
       '\n\nTotal: ' + fmt(total) + (pending ? ' (+ productos a confirmar)' : '') +
       '\n\nNombre: ' + d.nombre + '\nDNI: ' + d.dni + '\nTeléfono: ' + d.telefono +
       '\nEntrega: Envío a domicilio\nDirección: ' + d.direccion;
-    window.open('https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+    var url = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
+    var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isMobile) { window.location.href = url; return; }
+    var w = null;
+    try { w = window.open(url, '_blank'); } catch (err) { w = null; }
+    if (w) { try { w.opener = null; } catch (err) {} } else { window.location.href = url; }
   });
 
   // Abrir una carta desde el link (ej: intimatta.github.io/#lujuria)
