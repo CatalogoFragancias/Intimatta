@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#161210">
+<meta name="format-detection" content="telephone=no">
+<meta name="robots" content="noindex, nofollow">
+<title>Intimatta — Línea +18</title>
+<link rel="icon" href="img/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,600;0,6..96,700;1,6..96,500;1,6..96,600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="adult">
+
+<header class="header">
+  <div class="wrap header-row">
+    <a href="index.html" class="brand">
+      <img src="img/logo.jpg" width="700" height="846" alt="Logo de Intimatta" class="brand-logo">
+      <span class="brand-text">
+        <span class="wordmark">Intimatta<sup>✦</sup></span>
+        <span class="tagline">LÍNEA +18</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="index.html">← VOLVER A LA TIENDA</a>
+    </nav>
+    <button type="button" class="cart-btn" data-open-cart aria-label="Ver carrito">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      <span>CARRITO (<span data-cart-count>0</span>)</span>
+    </button>
+  </div>
+</header>
+
+<main id="adult-content" hidden>
+  <section class="cosmetica adult">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">SOLO MAYORES DE 18</p>
+        <h2>Línea +18</h2>
+        <p class="muted">Productos para adultos. Envío en paquete neutro, sin logos ni descripción del contenido.</p>
+      </div>
+      <div class="chips" aria-label="Filtrar categorías" id="adult-chips"></div>
+      <div class="products-grid" id="adult-grid"></div>
+    </div>
+  </section>
+</main>
+
+<!-- Confirmación de edad -->
+<div class="overlay age-gate" id="age-gate" role="dialog" aria-modal="true" aria-labelledby="age-title">
+  <div class="age-box">
+    <img src="img/logo.jpg" width="700" height="846" alt="" class="brand-logo brand-logo-lg">
+    <h2 id="age-title">¿Sos mayor de 18 años?</h2>
+    <p class="muted">Esta sección contiene productos para adultos.</p>
+    <div class="age-actions">
+      <button type="button" class="btn btn-dark" id="age-yes">SÍ, TENGO 18 O MÁS</button>
+      <a href="index.html" class="btn btn-outline">NO, VOLVER</a>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="wrap footer-legal">
+    <span>Venta exclusiva a mayores de 18 años.</span>
+    <a href="index.html" class="adult-link">Volver a Intimatta</a>
+  </div>
+</footer>
+
+<div id="cart-root"></div>
+<script src="app.js" defer></script>
+</body>
+</html>

@@ -5,8 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#161210">
 <meta name="format-detection" content="telephone=no">
-<title>Intimatta — Pleasure Shop</title>
-<meta name="description" content="Intimatta Pleasure Shop: juguetes para adultos, lencería y perfumes propios. Tu deseo. Tus reglas.">
+<title>Intimatta — Perfumería y cosmética íntima</title>
+<meta name="description" content="Intimatta: perfumes de autor, fragancias con feromonas y cosmética íntima. Envío discreto a todo el país.">
+<meta property="og:title" content="Intimatta — Perfumería y cosmética íntima">
+<meta property="og:description" content="Perfumes de autor, fragancias con feromonas y cosmética íntima. Tu piel. Tu aroma. Tus reglas.">
+<meta property="og:image" content="img/perfumes/sovrana.jpg">
+<meta property="og:type" content="website">
 <link rel="icon" href="img/logo.jpg">
 <link rel="apple-touch-icon" href="img/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,22 +18,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,600;0,6..96,700;1,6..96,500;1,6..96,600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body data-page="home">
 
 <div class="promo">3 CUOTAS SIN INTERÉS <span class="pink">✦</span> 10% OFF CON TRANSFERENCIA <span class="pink">✦</span> ENVÍO DISCRETO</div>
 
 <header class="header">
   <div class="wrap header-row">
     <a href="#inicio" class="brand">
-      <img src="img/logo.jpg" alt="Logo de Intimatta" class="brand-logo">
+      <img src="img/logo.jpg" width="700" height="846" alt="Logo de Intimatta" class="brand-logo">
       <span class="brand-text">
         <span class="wordmark">Intimatta<sup>✦</sup></span>
-        <span class="tagline">PLEASURE SHOP</span>
+        <span class="tagline">PERFUMERÍA &amp; COSMÉTICA ÍNTIMA</span>
       </span>
     </a>
     <nav class="nav" aria-label="Principal">
-      <a href="#juguetes">JUGUETES</a>
-      <button type="button" data-open-card="estrella">PERFUMES</button>
+      <a href="#perfumes">PERFUMES</a>
+      <a href="#cosmetica">COSMÉTICA</a>
       <a href="#como-comprar">CÓMO COMPRAR</a>
       <a href="#contacto">CONTACTO</a>
     </nav>
@@ -48,37 +52,71 @@
       </div>
     </div>
     <div class="hero-text">
-      <p class="eyebrow">✦ PLEASURE SHOP ✦</p>
-      <h1>Tu deseo.<br><em>Tus reglas.</em></h1>
-      <p class="lead">Vibradores, succionadores y juguetes para disfrutar como quieras: sola, solo o en pareja. Porque el placer no tiene género.</p>
+      <p class="eyebrow">✦ PERFUMERÍA DE AUTOR ✦</p>
+      <h1>Tu piel. Tu aroma.<br><em>Tus reglas.</em></h1>
+      <p class="lead">Perfumes de autor, fragancias con feromonas y cosmética íntima para tus rituales de cuidado. Enviados con total discreción.</p>
       <div class="hero-actions">
-        <a href="#juguetes" class="btn btn-dark">TIRAR LAS CARTAS</a>
-        <button type="button" class="btn btn-outline" data-open-card="estrella">PERFUMES INTIMATTA</button>
+        <a href="#perfumes" class="btn btn-dark">VER PERFUMES</a>
+        <a href="#cosmetica" class="btn btn-outline">COSMÉTICA ÍNTIMA</a>
       </div>
     </div>
   </section>
 
-  <section id="juguetes" class="cards-section">
+  <!-- Perfumes -->
+  <section id="perfumes" class="perfumes">
+    <div class="wrap">
+      <div class="section-head light-head">
+        <p class="eyebrow pink">LÍNEA PROPIA ✦ EAU DE PARFUM 60 ML</p>
+        <h2>Perfumes Intimatta<sup>✦</sup></h2>
+        <p class="muted-light">Fragancias de autor para llevar en la piel. Algunas con feromonas: consultanos y te ayudamos a elegir la tuya.</p>
+      </div>
+      <div class="chips" aria-label="Filtrar perfumes" id="perfume-chips">
+        <button type="button" class="chip active" data-filter="todos" aria-pressed="true">Todos</button>
+        <button type="button" class="chip" data-filter="Donna" aria-pressed="false">Donna</button>
+        <button type="button" class="chip" data-filter="Homme" aria-pressed="false">Homme</button>
+        <button type="button" class="chip" data-filter="Unisex" aria-pressed="false">Unisex</button>
+      </div>
+      <div class="products-grid" id="perfumes-grid"></div>
+    </div>
+  </section>
+
+  <!-- Historia -->
+  <section class="story">
+    <div class="wrap story-row">
+      <div class="story-img">
+        <img src="img/estrella.jpg" width="640" height="960" alt="Ilustración de tarot: La Estrella sosteniendo un frasco de perfume">
+      </div>
+      <div class="story-text">
+        <p class="eyebrow">XVII ✦ LA ESTRELLA</p>
+        <h2>Una estela que queda en la piel</h2>
+        <p>En el tarot, La Estrella es deseo, calma y esperanza. Así pensamos cada fragancia: un ritual propio, algo que elegís para vos y que te acompaña todo el día.</p>
+        <p>Nuestros perfumes vienen en frasco de vidrio de 60 ml, con etiquetas numeradas como una colección.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cosmética -->
+  <section id="cosmetica" class="cosmetica">
     <div class="wrap">
       <div class="section-head">
-        <p class="eyebrow">SEXTAROT ✦ ARCANOS MAYORES</p>
-        <h2>Elegí tu carta</h2>
-        <p class="muted">Cada arcano guarda una categoría. Tocá una carta y descubrí lo que tiene preparado para vos.</p>
+        <p class="eyebrow">CUIDADO ✦ MASAJE ✦ BIENESTAR</p>
+        <h2>Cosmética íntima</h2>
+        <p class="muted">Aceites, geles y cremas para el cuidado de tu piel y tus momentos de relax, sola o en pareja.</p>
       </div>
-      <div class="cards-grid" id="cards-grid"></div>
+      <div class="products-grid" id="cosmetica-grid"></div>
     </div>
   </section>
 
   <section class="manifesto">
-    <span class="pink spaced">✦ ♥ ✦</span>
-    <p>El placer <em>no tiene</em> género.</p>
+    <span class="spaced">✦ ♥ ✦</span>
+    <p>Cuidarte <em>también</em> es un ritual.</p>
   </section>
 
   <section id="como-comprar" class="how">
     <div class="wrap how-grid">
       <div><span class="roman">I</span><h3>Envío discreto</h3><p>Paquete neutro, sin logos ni descripción del contenido.</p></div>
       <div><span class="roman">II</span><h3>3 cuotas sin interés</h3><p>O 10% de descuento pagando con transferencia.</p></div>
-      <div><span class="roman">III</span><h3>Te asesoramos</h3><p>Escribinos por WhatsApp sin vergüenza: te ayudamos a elegir.</p></div>
+      <div><span class="roman">III</span><h3>Te asesoramos</h3><p>Escribinos por WhatsApp y te ayudamos a elegir tu fragancia.</p></div>
     </div>
   </section>
 </main>
@@ -86,10 +124,10 @@
 <footer id="contacto" class="footer">
   <div class="wrap footer-row">
     <div class="brand">
-      <img src="img/logo.jpg" alt="" class="brand-logo brand-logo-lg">
+      <img src="img/logo.jpg" width="700" height="846" alt="" class="brand-logo brand-logo-lg">
       <span class="brand-text">
         <span class="wordmark">Intimatta<sup>✦</sup></span>
-        <span class="tagline light">TU DESEO. TUS REGLAS.</span>
+        <span class="tagline light">TU PIEL. TU AROMA. TUS REGLAS.</span>
       </span>
     </div>
     <div class="footer-links">
@@ -100,82 +138,13 @@
       <a href="https://www.intimatta.ar" target="_blank" rel="noopener">Tienda Nube</a>
     </div>
   </div>
-  <div class="wrap footer-legal">Venta exclusiva a mayores de 18 años.</div>
+  <div class="wrap footer-legal">
+    <span>Productos para mayores de 18 años.</span>
+    <a href="mas18.html" class="adult-link" rel="nofollow">Línea +18</a>
+  </div>
 </footer>
 
-<!-- Catálogo de cada carta -->
-<div class="overlay catalog" id="catalog" role="dialog" aria-modal="true" aria-label="Catálogo de la carta" hidden>
-  <div class="wrap catalog-inner">
-    <button type="button" class="btn btn-ghost" data-close-catalog>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
-      VOLVER A LAS CARTAS
-    </button>
-    <div class="catalog-head">
-      <img id="catalog-img" src="img/cartas/loco.jpg" width="640" height="960" alt="">
-      <div class="catalog-title">
-        <p class="eyebrow" id="catalog-arcano"></p>
-        <h2 id="catalog-name"></h2>
-        <p class="meaning" id="catalog-meaning"></p>
-      </div>
-      <span class="count" id="catalog-count"></span>
-    </div>
-    <div class="products-grid" id="products-grid"></div>
-    <div class="center">
-      <button type="button" class="btn btn-dark" data-close-catalog>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
-        ELEGIR OTRA CARTA
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- Botón flotante -->
-<button type="button" class="fab" id="fab" data-open-cart hidden>
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
-  VER CARRITO (<span data-cart-count>0</span>)
-</button>
-
-<!-- Carrito -->
-<div class="overlay cart-overlay" id="cart" hidden>
-  <button type="button" class="cart-backdrop" data-close-cart aria-label="Cerrar carrito"></button>
-  <aside class="cart-panel" aria-label="Carrito">
-    <div class="cart-head">
-      <h2>Tu pedido<sup>✦</sup></h2>
-      <button type="button" class="icon-btn" data-close-cart aria-label="Cerrar">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-      </button>
-    </div>
-
-    <div id="cart-empty" class="cart-empty">
-      <span class="pink">✦</span>
-      <p class="cart-empty-title">Tu carrito está vacío</p>
-      <p class="muted">Elegí una carta y agregá lo que te guste.</p>
-      <button type="button" class="btn btn-dark" data-close-cart>SEGUIR MIRANDO</button>
-    </div>
-
-    <div id="cart-full" hidden>
-      <div class="cart-lines" id="cart-lines"></div>
-      <div class="cart-total"><span>TOTAL</span><strong id="cart-total">$0</strong></div>
-      <p class="small muted">3 cuotas sin interés o 10% off pagando con transferencia.</p>
-      <p class="small pink" id="cart-pending" hidden>Los perfumes tienen precio a confirmar por WhatsApp.</p>
-
-      <form id="order-form" class="order-form" novalidate>
-        <p class="eyebrow">TUS DATOS</p>
-        <label>NOMBRE Y APELLIDO<input type="text" name="nombre" autocomplete="name" required></label>
-        <label>DNI<input type="text" name="dni" inputmode="numeric" required></label>
-        <label>TELÉFONO<input type="tel" name="telefono" autocomplete="tel" required></label>
-        <label>DIRECCIÓN DE ENVÍO<input type="text" name="direccion" autocomplete="street-address" placeholder="Calle, número, piso, ciudad y código postal" required></label>
-        <p class="error" id="form-error" role="alert" hidden>Completá todos los datos para enviar el pedido.</p>
-        <button type="submit" class="btn btn-wa">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
-          ENVIAR PEDIDO POR WHATSAPP
-        </button>
-        <p class="small muted">Se abre WhatsApp con tu pedido listo. Te respondemos para coordinar el pago y el envío.</p>
-      </form>
-    </div>
-  </aside>
-</div>
-
+<div id="cart-root"></div>
 <script src="app.js" defer></script>
 </body>
 </html>

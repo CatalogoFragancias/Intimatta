@@ -1,72 +1,166 @@
-// Intimatta — catálogo con Sextarot y pedidos por WhatsApp
+// Intimatta — perfumería y cosmética íntima, pedidos por WhatsApp
 (function () {
   'use strict';
 
   var WHATSAPP = '542212014530';
 
-  var CARDS = [
-    { id: 'loco', numeral: '0', name: 'El Loco', title: 'Vibradores', cat: 'vibradores', meaning: 'Todo viaje empieza con un salto. Dejate vibrar.' },
-    { id: 'mago', numeral: 'I', name: 'El Mago', title: 'Dildos', cat: 'dildos', meaning: 'La magia está en tus manos.' },
-    { id: 'placer', numeral: 'II', name: 'El Placer', title: 'Lencería', cat: 'lenceria', meaning: 'Vestirte para vos, para el deseo y para el juego.' },
-    { id: 'emperador', numeral: 'IV', name: 'El Emperador', title: 'Masturbadores y bombas', cat: 'masturbadores', meaning: 'Tomá el control de tu placer.' },
-    { id: 'enamorados', numeral: 'VI', name: 'Los Enamorados', title: 'Succionadores', cat: 'succionadores', meaning: 'Elegirse, y elegir sentir más.' },
-    { id: 'lujuria', numeral: 'XI', name: 'Lujuria', title: 'BDSM', cat: 'bdsm', meaning: 'Entregarse y dominar, siempre con consentimiento.' },
-    { id: 'estrella', numeral: 'XVII', name: 'La Estrella', title: 'Perfumes Intimatta', cat: 'perfumes', meaning: 'Deseo y esperanza: una estela que queda en la piel.' }
-  ];
-
-  // price/old en pesos; price: null = precio a confirmar
+  // price/old en pesos. price: null = precio a consultar.
+  // line: 'perfume' | 'cosmetica' (se ven en la portada) | 'adulto' (solo en mas18.html)
   var PRODUCTS = [
-    { name: 'Vibrador Punto G - Gluxe - Control Por Aplicación', cat: 'vibradores', price: 85000, old: 118000, stock: true },
-    { name: 'Kit Estimulador Luxury X 5 Recargable', cat: 'vibradores', price: 45000, old: 76000, stock: true },
-    { name: 'Estimulador Clitorial Nasty 3 Sex Therapy para mujer', cat: 'vibradores', price: 40000, old: 45000, stock: true },
-    { name: 'Kit Vibrador + Dilatador Sex Therapy', cat: 'vibradores', price: 40000, old: 45000, stock: true },
-    { name: 'LUXURY PURPLE LINE THREE', cat: 'vibradores', price: 39000, old: 53000, stock: false },
+    // Perfumes
+    { name: 'Sovrana', cartName: 'Perfume Sovrana', line: 'perfume', gen: 'Donna', price: null, stock: true, img: 'img/perfumes/sovrana.jpg', desc: 'Eau de Parfum · Donna · 60 ml' },
+    { name: 'Ammelí', cartName: 'Perfume Ammelí', line: 'perfume', gen: 'Donna', price: null, stock: true, img: 'img/perfumes/ammeli.jpg', desc: 'Eau de Parfum · Donna · 60 ml' },
+    { name: 'Alchimia n°9', cartName: 'Perfume Alchimia n°9', line: 'perfume', gen: 'Donna', price: null, stock: true, img: 'img/perfumes/alchimia.jpg', desc: 'Eau de Parfum · Donna · 60 ml' },
+    { name: 'Aura', cartName: 'Perfume Aura', line: 'perfume', gen: 'Unisex', price: null, stock: true, img: 'img/perfumes/aura.jpg', desc: 'Eau de Parfum · Unisex · 60 ml' },
+    { name: 'Ambush', cartName: 'Perfume Ambush', line: 'perfume', gen: 'Homme', price: null, stock: true, img: 'img/perfumes/ambush.jpg', desc: 'Eau de Parfum · Homme · 60 ml' },
 
-    { name: 'Consolador Real Cock 2 - Dildo Realista - Ventosa', cat: 'dildos', price: 30000, old: 35000, stock: true },
-    { name: 'REAL COCK 3', cat: 'dildos', price: 28000, old: 34000, stock: true },
-    { name: 'REAL COCK 2', cat: 'dildos', price: 18000, old: 21000, stock: false },
+    // Cosmética íntima (portada)
+    { name: 'Aceite corporal Hot Inevitable 125 ml', line: 'cosmetica', label: 'ACEITE CORPORAL', price: 17000, old: 18000, stock: true, desc: 'Aceite corporal con efecto calor para masajes.' },
+    { name: 'Aceite para masajes Natural 60 ml', line: 'cosmetica', label: 'ACEITE DE MASAJE', price: 4500, old: 5000, stock: true, desc: 'Aceite neutro para masajes relajantes.' },
+    { name: 'Aceite para masajes Uva 60 ml', line: 'cosmetica', label: 'ACEITE DE MASAJE', price: 3500, old: 5000, stock: true, desc: 'Aceite de masaje con aroma a uva.' },
+    { name: 'Gel íntimo Warming 120 cc', line: 'cosmetica', label: 'GEL ÍNTIMO', price: 5000, old: 6000, stock: false, desc: 'Gel íntimo a base de agua con efecto calor.' },
+    { name: 'Magic Dual — aceite para masajes y gel íntimo', line: 'cosmetica', label: 'ACEITE 2 EN 1', price: 13000, old: 20000, stock: false, desc: 'Aceite para masajes que también funciona como gel íntimo.' },
 
-    { name: 'Body Berlin - Negro', cat: 'lenceria', price: 25000, old: 27000, stock: true },
-    { name: 'Body Ramos Encaje', cat: 'lenceria', price: 31000, old: 35000, stock: true },
-    { name: 'Conjunto Kiss Lenceria Cola Less - Negro', cat: 'lenceria', price: 28000, old: 30000, stock: true },
-    { name: 'BUSTIER LADY NEGRO - BORDO', cat: 'lenceria', price: 36000, old: 40000, stock: true },
-    { name: 'Body Cosmos De Encaje', cat: 'lenceria', price: 24000, old: 26000, stock: true },
-
-    { name: 'Masturbador Succionador Masculino Sex Therapy Xp3', cat: 'masturbadores', price: 135000, old: 190000, stock: true },
-    { name: 'Bomba Peneana Penis Pump 13 22cm X 6,9 Cm', cat: 'masturbadores', price: 25000, old: 45900, stock: true },
-    { name: 'Masturbador Masculino York 10 + 5 Vibraciones Recargable', cat: 'masturbadores', price: 50000, old: 67000, stock: false },
-    { name: 'MASTURBADOR CON VENTOSA - BOCA', cat: 'masturbadores', price: 20000, old: 22000, stock: false },
-    { name: 'MASTURBADOR CON VENTOSA - ANAL', cat: 'masturbadores', price: 23000, old: 26000, stock: false },
-
-    { name: 'Succionador LUXURY MINI FANTASY', cat: 'succionadores', price: 80000, old: 90000, stock: true },
-    { name: 'Suction Toy Succionador Vibrador Clitoris', cat: 'succionadores', price: 41000, old: 55000, stock: true },
-    { name: 'SUCTION VIBRATION AIREXA', cat: 'succionadores', price: 25000, old: 45000, stock: true },
-    { name: 'PURPLE LUMO', cat: 'succionadores', price: 22000, old: 26000, stock: false },
-
-    { name: 'Kit Bondage: Esposas, Correa, Latigo, Mordaza, Antifaz Negro', cat: 'bdsm', price: 53000, old: 75000, stock: true },
-    { name: 'Pezoneras Champs 8 Metal Y Goma Suave Ajustable', cat: 'bdsm', price: 15000, old: 20500, stock: true },
-    { name: 'Antifaz Cuero Resistente Adaptable', cat: 'bdsm', price: 11000, old: 15000, stock: true },
-    { name: 'Esposas Fetiche Eróticas De Cuero Rosa Ajustables Sex Shop', cat: 'bdsm', price: 10000, old: 11000, stock: true },
-    { name: 'Kit Bondage BDSM Sex Therapy 4 Piezas Playsensual Set Látigo Mordaza Antifaz Pezoneras', cat: 'bdsm', price: 20000, old: 26000, stock: false },
-
-    { name: 'Sovrana', cartName: 'Perfume Sovrana', cat: 'perfumes', price: null, old: null, stock: true, img: 'img/perfumes/sovrana.jpg', desc: 'Eau de Parfum · Donna · 60 ml' },
-    { name: 'Ammelí', cartName: 'Perfume Ammelí', cat: 'perfumes', price: null, old: null, stock: true, img: 'img/perfumes/ammeli.jpg', desc: 'Eau de Parfum · Donna · 60 ml' },
-    { name: 'Alchimia n°9', cartName: 'Perfume Alchimia n°9', cat: 'perfumes', price: null, old: null, stock: true, img: 'img/perfumes/alchimia.jpg', desc: 'Eau de Parfum · Donna · 60 ml' },
-    { name: 'Aura', cartName: 'Perfume Aura', cat: 'perfumes', price: null, old: null, stock: true, img: 'img/perfumes/aura.jpg', desc: 'Eau de Parfum · Unisex · 60 ml' },
-    { name: 'Ambush', cartName: 'Perfume Ambush', cat: 'perfumes', price: null, old: null, stock: true, img: 'img/perfumes/ambush.jpg', desc: 'Eau de Parfum · Homme · 60 ml' }
+    // Línea +18 (solo en mas18.html)
+    { name: 'Vibrador Punto G - Gluxe - Control Por Aplicación', line: 'adulto', cat: 'Vibradores', price: 85000, old: 118000, stock: true },
+    { name: 'Kit Estimulador Luxury X 5 Recargable', line: 'adulto', cat: 'Vibradores', price: 45000, old: 76000, stock: true },
+    { name: 'Estimulador Clitorial Nasty 3 Sex Therapy', line: 'adulto', cat: 'Vibradores', price: 40000, old: 45000, stock: true },
+    { name: 'Kit Vibrador + Dilatador Sex Therapy', line: 'adulto', cat: 'Vibradores', price: 40000, old: 45000, stock: true },
+    { name: 'LUXURY PURPLE LINE THREE', line: 'adulto', cat: 'Vibradores', price: 39000, old: 53000, stock: false },
+    { name: 'Succionador LUXURY MINI FANTASY', line: 'adulto', cat: 'Succionadores', price: 80000, old: 90000, stock: true },
+    { name: 'Suction Toy Succionador Vibrador Clitoris', line: 'adulto', cat: 'Succionadores', price: 41000, old: 55000, stock: true },
+    { name: 'SUCTION VIBRATION AIREXA', line: 'adulto', cat: 'Succionadores', price: 25000, old: 45000, stock: true },
+    { name: 'PURPLE LUMO', line: 'adulto', cat: 'Succionadores', price: 22000, old: 26000, stock: false },
+    { name: 'Consolador Real Cock 2 - Dildo Realista - Ventosa', line: 'adulto', cat: 'Dildos', price: 30000, old: 35000, stock: true },
+    { name: 'REAL COCK 3', line: 'adulto', cat: 'Dildos', price: 28000, old: 34000, stock: true },
+    { name: 'REAL COCK 2', line: 'adulto', cat: 'Dildos', price: 18000, old: 21000, stock: false },
+    { name: 'Masturbador Succionador Masculino Sex Therapy Xp3', line: 'adulto', cat: 'Masculinos', price: 135000, old: 190000, stock: true },
+    { name: 'Bomba Peneana Penis Pump 13 22cm X 6,9 Cm', line: 'adulto', cat: 'Masculinos', price: 25000, old: 45900, stock: true },
+    { name: 'Masturbador Masculino York 10 + 5 Vibraciones Recargable', line: 'adulto', cat: 'Masculinos', price: 50000, old: 67000, stock: false },
+    { name: 'Kit Pleasure - Plug Anal, Bala Vibradora - Sex Therapy', line: 'adulto', cat: 'Anales', price: 70000, old: 97000, stock: true },
+    { name: 'Vibrador Anal Cesar 10 Modos 15 Cm Recargable', line: 'adulto', cat: 'Anales', price: 50500, old: 89000, stock: true },
+    { name: 'Jimy 2 Vibrador Anal Texturado', line: 'adulto', cat: 'Anales', price: 41000, old: 60000, stock: true },
+    { name: 'Plug Anal Steel Pequeño', line: 'adulto', cat: 'Anales', price: 20000, old: 24000, stock: true },
+    { name: 'Kit Bondage: Esposas, Correa, Latigo, Mordaza, Antifaz Negro', line: 'adulto', cat: 'BDSM', price: 53000, old: 75000, stock: true },
+    { name: 'Pezoneras Champs 8 Metal Y Goma Suave Ajustable', line: 'adulto', cat: 'BDSM', price: 15000, old: 20500, stock: true },
+    { name: 'Antifaz Cuero Resistente Adaptable', line: 'adulto', cat: 'BDSM', price: 11000, old: 15000, stock: true },
+    { name: 'Esposas De Cuero Rosa Ajustables', line: 'adulto', cat: 'BDSM', price: 10000, old: 11000, stock: true },
+    { name: 'Body Berlin - Negro', line: 'adulto', cat: 'Lencería', price: 25000, old: 27000, stock: true },
+    { name: 'Body Ramos Encaje', line: 'adulto', cat: 'Lencería', price: 31000, old: 35000, stock: true },
+    { name: 'Conjunto Kiss Lenceria Cola Less - Negro', line: 'adulto', cat: 'Lencería', price: 28000, old: 30000, stock: true },
+    { name: 'BUSTIER LADY NEGRO - BORDO', line: 'adulto', cat: 'Lencería', price: 36000, old: 40000, stock: true },
+    { name: 'Body Cosmos De Encaje', line: 'adulto', cat: 'Lencería', price: 24000, old: 26000, stock: true },
+    { name: 'OLEO ORGASMICO ESTIMULANTE XXX FOR HER', line: 'adulto', cat: 'Geles y estimulantes', price: 14000, old: 16000, stock: true },
+    { name: 'GEL INTIMO SENS BOMB - MACA 70 GRS', line: 'adulto', cat: 'Geles y estimulantes', price: 11000, old: 12000, stock: false },
+    { name: 'GEL INTIMO LUBRICANTE ANAL DESIRE COCONUT', line: 'adulto', cat: 'Geles y estimulantes', price: 8000, old: 10000, stock: false },
+    { name: 'GEL INTIMO BUTT 120 CC', line: 'adulto', cat: 'Geles y estimulantes', price: 5000, old: 6000, stock: false }
   ];
 
+  var page = document.body.getAttribute('data-page');
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
-  // Formato $85.000 igual en todos los navegadores (sin depender de toLocaleString)
+  // $85.000 igual en todos los navegadores
   var fmt = function (n) { return '$' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.'); };
   var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
-  var cardById = function (id) { return CARDS.filter(function (c) { return c.id === id; })[0]; };
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
 
-  // ---------- Carrito ----------
-  var cart = [];
-  try { cart = JSON.parse(localStorage.getItem('intimatta-cart') || '[]') || []; } catch (e) { cart = []; }
-  var saveCart = function () { try { localStorage.setItem('intimatta-cart', JSON.stringify(cart)); } catch (e) {} };
+  // ---------- Tarjeta de producto ----------
+  function productCard(p, label, dark) {
+    var i = PRODUCTS.indexOf(p);
+    var img = p.img
+      ? '<div class="product-img photo"><img src="' + esc(p.img) + '" width="700" height="875" alt="' + esc(p.name) + '" loading="lazy"></div>'
+      : '<div class="product-img"><span>' + esc(p.name.charAt(0)) + '</span></div>';
+    var prices = p.price
+      ? '<span class="old">' + fmt(p.old) + '</span><span class="price-row"><span class="price">' + fmt(p.price) + '</span><span class="off">' + Math.round((1 - p.price / p.old) * 100) + '% OFF</span></span><span class="small">3 cuotas sin interés</span>'
+      : '<span class="price-row"><span class="price">Precio a consultar</span></span><span class="small">Consultanos por WhatsApp</span>';
+    var btn = p.stock
+      ? '<button type="button" class="add" data-add="' + i + '">AGREGAR</button>'
+      : '<button type="button" class="add" disabled>SIN STOCK</button>';
+    return '<article class="product' + (dark ? ' product-dark' : '') + '">' + img +
+      '<p class="product-cat">' + esc(label) + '</p>' +
+      '<h3>' + esc(p.name) + '</h3>' +
+      (p.desc ? '<p class="product-desc">' + esc(p.desc) + '</p>' : '') +
+      '<div class="prices">' + prices + '</div>' + btn + '</article>';
+  }
+
+  function setupChips(container, onPick) {
+    container.addEventListener('click', function (e) {
+      var b = e.target; while (b && b !== container && b.tagName !== 'BUTTON') b = b.parentNode;
+      if (!b || b === container) return;
+      $$('.chip', container).forEach(function (c) { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
+      b.classList.add('active'); b.setAttribute('aria-pressed', 'true');
+      onPick(b.getAttribute('data-filter'));
+    });
+  }
+
+  // ---------- Portada ----------
+  if (page === 'home') {
+    var renderPerfumes = function (f) {
+      var list = PRODUCTS.filter(function (p) { return p.line === 'perfume' && (f === 'todos' || p.gen === f); });
+      $('#perfumes-grid').innerHTML = list.map(function (p) { return productCard(p, 'PERFUME ' + p.gen.toUpperCase(), true); }).join('');
+    };
+    renderPerfumes('todos');
+    setupChips($('#perfume-chips'), renderPerfumes);
+    $('#cosmetica-grid').innerHTML = PRODUCTS.filter(function (p) { return p.line === 'cosmetica'; })
+      .map(function (p) { return productCard(p, p.label, false); }).join('');
+  }
+
+  // ---------- Línea +18 ----------
+  if (page === 'adult') {
+    var adult = PRODUCTS.filter(function (p) { return p.line === 'adulto'; });
+    var cats = [];
+    adult.forEach(function (p) { if (cats.indexOf(p.cat) < 0) cats.push(p.cat); });
+    $('#adult-chips').innerHTML = '<button type="button" class="chip active" data-filter="todos" aria-pressed="true">Todo</button>' +
+      cats.map(function (c) { return '<button type="button" class="chip" data-filter="' + esc(c) + '" aria-pressed="false">' + esc(c) + '</button>'; }).join('');
+    var renderAdult = function (f) {
+      $('#adult-grid').innerHTML = adult.filter(function (p) { return f === 'todos' || p.cat === f; })
+        .map(function (p) { return productCard(p, p.cat.toUpperCase(), false); }).join('');
+    };
+    renderAdult('todos');
+    setupChips($('#adult-chips'), renderAdult);
+
+    var showAdult = function () { $('#age-gate').hidden = true; $('#adult-content').hidden = false; document.body.classList.remove('locked'); };
+    if (store.get('intimatta-18', false)) showAdult(); else document.body.classList.add('locked');
+    $('#age-yes').addEventListener('click', function () { store.set('intimatta-18', true); showAdult(); });
+  }
+
+  // ---------- Carrito (se arma igual en las dos páginas) ----------
+  $('#cart-root').innerHTML =
+    '<button type="button" class="fab" id="fab" data-open-cart hidden>' +
+      '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>' +
+      'VER CARRITO (<span data-cart-count>0</span>)</button>' +
+    '<div class="overlay cart-overlay" id="cart" hidden>' +
+      '<button type="button" class="cart-backdrop" data-close-cart aria-label="Cerrar carrito"></button>' +
+      '<aside class="cart-panel" aria-label="Carrito">' +
+        '<div class="cart-head"><h2>Tu pedido<sup>✦</sup></h2>' +
+          '<button type="button" class="icon-btn" data-close-cart aria-label="Cerrar"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+        '<div id="cart-empty" class="cart-empty"><span class="rose">✦</span><p class="cart-empty-title">Tu carrito está vacío</p>' +
+          '<p class="muted">Elegí tu fragancia o un producto de cuidado.</p>' +
+          '<button type="button" class="btn btn-dark" data-close-cart>SEGUIR MIRANDO</button></div>' +
+        '<div id="cart-full" hidden>' +
+          '<div class="cart-lines" id="cart-lines"></div>' +
+          '<div class="cart-total"><span>TOTAL</span><strong id="cart-total">$0</strong></div>' +
+          '<p class="small">3 cuotas sin interés o 10% off pagando con transferencia.</p>' +
+          '<p class="small rose" id="cart-pending" hidden>Los perfumes tienen precio a consultar: te lo confirmamos por WhatsApp.</p>' +
+          '<form id="order-form" class="order-form" novalidate>' +
+            '<p class="eyebrow">TUS DATOS</p>' +
+            '<label>NOMBRE Y APELLIDO<input type="text" name="nombre" autocomplete="name" required></label>' +
+            '<label>DNI<input type="text" name="dni" inputmode="numeric" required></label>' +
+            '<label>TELÉFONO<input type="tel" name="telefono" autocomplete="tel" required></label>' +
+            '<label>DIRECCIÓN DE ENVÍO<input type="text" name="direccion" autocomplete="street-address" placeholder="Calle, número, piso, ciudad y código postal" required></label>' +
+            '<p class="error" id="form-error" role="alert" hidden>Completá todos los datos para enviar el pedido.</p>' +
+            '<button type="submit" class="btn btn-wa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>ENVIAR PEDIDO POR WHATSAPP</button>' +
+            '<p class="small">Se abre WhatsApp con tu pedido listo. Te respondemos para coordinar el pago y el envío.</p>' +
+          '</form>' +
+        '</div>' +
+      '</aside>' +
+    '</div>';
+
+  var cart = store.get('intimatta-cart', []) || [];
+  var saveCart = function () { store.set('intimatta-cart', cart); };
 
   function addToCart(p) {
     var name = p.cartName || p.name;
@@ -79,7 +173,6 @@
     cart = cart.filter(function (x) { return x.qty > 0; });
     saveCart(); renderCart();
   }
-
   function renderCart() {
     var count = cart.reduce(function (a, x) { return a + x.qty; }, 0);
     var total = cart.reduce(function (a, x) { return a + (x.price ? x.price * x.qty : 0); }, 0);
@@ -91,7 +184,7 @@
     $('#cart-pending').hidden = !cart.some(function (x) { return !x.price; });
     $('#cart-lines').innerHTML = cart.map(function (x) {
       return '<div class="line"><div class="line-top"><span class="line-name">' + esc(x.name) + '</span>' +
-        '<span class="line-sub">' + (x.price ? fmt(x.price * x.qty) : 'A confirmar') + '</span></div>' +
+        '<span class="line-sub">' + (x.price ? fmt(x.price * x.qty) : 'A consultar') + '</span></div>' +
         '<div class="line-bottom"><div class="qty">' +
         '<button type="button" aria-label="Restar uno" data-qty="-1" data-name="' + esc(x.name) + '">−</button>' +
         '<span>' + x.qty + '</span>' +
@@ -99,66 +192,14 @@
         '<button type="button" class="remove" data-remove data-name="' + esc(x.name) + '">Quitar</button></div></div>';
     }).join('');
   }
+  function lock() { document.body.classList.toggle('locked', !$('#cart').hidden || (page === 'adult' && !$('#age-gate').hidden)); }
+  function openCart() { $('#cart').hidden = false; renderCart(); lock(); }
+  function closeCart() { $('#cart').hidden = true; renderCart(); lock(); }
 
-  // ---------- Overlays ----------
-  function lockScroll() { document.body.classList.toggle('locked', !$('#cart').hidden || !$('#catalog').hidden); }
-
-  function openCart() { $('#cart').hidden = false; renderCart(); lockScroll(); }
-  function closeCart() { $('#cart').hidden = true; renderCart(); lockScroll(); }
-
-  function openCard(id) {
-    var c = cardById(id); if (!c) return;
-    var list = PRODUCTS.filter(function (p) { return p.cat === c.cat; });
-    $('#catalog-img').src = 'img/cartas/' + c.id + '.jpg';
-    $('#catalog-img').alt = 'Carta del tarot: ' + c.name;
-    $('#catalog-arcano').textContent = c.numeral + ' · ' + c.name.toUpperCase();
-    $('#catalog-name').textContent = c.title;
-    $('#catalog-meaning').textContent = c.meaning;
-    $('#catalog-count').textContent = list.length + (list.length === 1 ? ' PRODUCTO' : ' PRODUCTOS');
-    var label = c.name.toUpperCase() + ' · ' + c.title.toUpperCase();
-    $('#products-grid').innerHTML = list.map(function (p) {
-      var i = PRODUCTS.indexOf(p);
-      var img = p.img
-        ? '<div class="product-img photo"><img src="' + esc(p.img) + '" width="700" height="875" alt="' + esc(p.name) + '" loading="lazy"></div>'
-        : '<div class="product-img"><span>' + esc(p.name.charAt(0)) + '</span></div>';
-      var prices = p.price
-        ? '<span class="old">' + fmt(p.old) + '</span><span class="price-row"><span class="price">' + fmt(p.price) + '</span><span class="off">' + Math.round((1 - p.price / p.old) * 100) + '% OFF</span></span>'
-        : '<span class="price-row"><span class="price">Precio a confirmar</span></span>';
-      var btn = p.stock
-        ? '<button type="button" class="add" data-add="' + i + '">AGREGAR</button>'
-        : '<button type="button" class="add" disabled>SIN STOCK</button>';
-      return '<article class="product">' + img +
-        '<p class="product-cat">' + esc(label) + '</p>' +
-        '<h3>' + esc(p.name) + '</h3>' +
-        (p.desc ? '<p class="product-desc">' + esc(p.desc) + '</p>' : '') +
-        '<div class="prices">' + prices + '<span class="small muted">3 cuotas sin interés</span></div>' + btn + '</article>';
-    }).join('');
-    var ov = $('#catalog'); ov.hidden = false; ov.scrollTop = 0; lockScroll();
-    try { history.replaceState(null, '', '#' + c.id); } catch (e) {}
-  }
-  function closeCatalog() {
-    $('#catalog').hidden = true; lockScroll();
-    try { history.replaceState(null, '', '#juguetes'); } catch (e) {}
-  }
-
-  // ---------- Cartas ----------
-  $('#cards-grid').innerHTML = CARDS.map(function (c) {
-    return '<button type="button" class="tarot" data-open-card="' + c.id + '" aria-label="' + esc(c.name) + ': ver ' + esc(c.title.toLowerCase()) + '">' +
-      '<span class="tarot-outer"><span class="tarot-inner">' +
-      '<img src="img/cartas/' + c.id + '.jpg" width="640" height="960" alt="Carta del tarot: ' + esc(c.name) + '" loading="lazy">' +
-      '<span class="rule"><span>✦</span></span>' +
-      '<span class="tarot-cat">' + esc(c.title.toUpperCase()) + '</span>' +
-      '<span class="tarot-sign">INTIMATTA</span>' +
-      '</span></span></button>';
-  }).join('');
-
-  // ---------- Eventos ----------
   document.addEventListener('click', function (e) {
     var t = e.target;
     while (t && t !== document && !(t.tagName === 'BUTTON' || t.tagName === 'A')) t = t.parentNode;
     if (!t || t === document) return;
-    if (t.hasAttribute('data-open-card')) { openCard(t.getAttribute('data-open-card')); return; }
-    if (t.hasAttribute('data-close-catalog')) { closeCatalog(); return; }
     if (t.hasAttribute('data-open-cart')) { openCart(); return; }
     if (t.hasAttribute('data-close-cart')) { closeCart(); return; }
     if (t.hasAttribute('data-add')) {
@@ -170,10 +211,7 @@
     if (t.hasAttribute('data-qty')) { changeQty(t.getAttribute('data-name'), +t.getAttribute('data-qty')); return; }
     if (t.hasAttribute('data-remove')) { changeQty(t.getAttribute('data-name'), -Infinity); return; }
   });
-  document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape') return;
-    if (!$('#cart').hidden) closeCart(); else if (!$('#catalog').hidden) closeCatalog();
-  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('#cart').hidden) closeCart(); });
 
   $('#order-form').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -185,8 +223,8 @@
     var total = cart.reduce(function (a, x) { return a + (x.price ? x.price * x.qty : 0); }, 0);
     var pending = cart.some(function (x) { return !x.price; });
     var msg = 'Hola Intimatta! Quiero hacer este pedido:\n\n' +
-      cart.map(function (x) { return '• ' + x.qty + ' x ' + x.name + ' — ' + (x.price ? fmt(x.price * x.qty) : 'precio a confirmar'); }).join('\n') +
-      '\n\nTotal: ' + fmt(total) + (pending ? ' (+ productos a confirmar)' : '') +
+      cart.map(function (x) { return '• ' + x.qty + ' x ' + x.name + ' — ' + (x.price ? fmt(x.price * x.qty) : 'precio a consultar'); }).join('\n') +
+      '\n\nTotal: ' + fmt(total) + (pending ? ' (+ productos a consultar)' : '') +
       '\n\nNombre: ' + d.nombre + '\nDNI: ' + d.dni + '\nTeléfono: ' + d.telefono +
       '\nEntrega: Envío a domicilio\nDirección: ' + d.direccion;
     var url = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
@@ -197,8 +235,5 @@
     if (w) { try { w.opener = null; } catch (err) {} } else { window.location.href = url; }
   });
 
-  // Abrir una carta desde el link (ej: intimatta.github.io/#lujuria)
-  var h = (location.hash || '').slice(1);
-  if (cardById(h)) openCard(h);
   renderCart();
 })();
