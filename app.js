@@ -15,11 +15,11 @@
     { name: 'Ambush', cartName: 'Perfume Ambush', line: 'perfume', gen: 'Homme', price: null, stock: true, img: 'img/perfumes/ambush.jpg', desc: 'Eau de Parfum · Homme · 60 ml' },
 
     // Cosmética íntima (portada)
-    { name: 'Aceite corporal Hot Inevitable 125 ml', line: 'cosmetica', label: 'ACEITE CORPORAL', price: 17000, old: 18000, stock: true, desc: 'Aceite corporal con efecto calor para masajes.' },
-    { name: 'Aceite para masajes Natural 60 ml', line: 'cosmetica', label: 'ACEITE DE MASAJE', price: 4500, old: 5000, stock: true, desc: 'Aceite neutro para masajes relajantes.' },
-    { name: 'Aceite para masajes Uva 60 ml', line: 'cosmetica', label: 'ACEITE DE MASAJE', price: 3500, old: 5000, stock: true, desc: 'Aceite de masaje con aroma a uva.' },
-    { name: 'Gel íntimo Warming 120 cc', line: 'cosmetica', label: 'GEL ÍNTIMO', price: 5000, old: 6000, stock: false, desc: 'Gel íntimo a base de agua con efecto calor.' },
-    { name: 'Magic Dual — aceite para masajes y gel íntimo', line: 'cosmetica', label: 'ACEITE 2 EN 1', price: 13000, old: 20000, stock: false, desc: 'Aceite para masajes que también funciona como gel íntimo.' },
+    { name: 'Aceite corporal Hot Inevitable 125 ml', line: 'cosmetica', label: 'ACEITE CORPORAL', icon: 'oil', price: 17000, old: 18000, stock: true, desc: 'Aceite corporal con efecto calor para masajes.' },
+    { name: 'Aceite para masajes Natural 60 ml', line: 'cosmetica', label: 'ACEITE DE MASAJE', icon: 'oil', price: 4500, old: 5000, stock: true, desc: 'Aceite neutro para masajes relajantes.' },
+    { name: 'Aceite para masajes Uva 60 ml', line: 'cosmetica', label: 'ACEITE DE MASAJE', icon: 'oil', price: 3500, old: 5000, stock: true, desc: 'Aceite de masaje con aroma a uva.' },
+    { name: 'Gel íntimo Warming 120 cc', line: 'cosmetica', label: 'GEL ÍNTIMO', icon: 'gel', price: 5000, old: 6000, stock: false, desc: 'Gel íntimo a base de agua con efecto calor.' },
+    { name: 'Magic Dual — aceite para masajes y gel íntimo', line: 'cosmetica', label: 'ACEITE 2 EN 1', icon: 'oil', price: 13000, old: 20000, stock: false, desc: 'Aceite para masajes que también funciona como gel íntimo.' },
 
     // Línea +18 (solo en mas18.html)
     { name: 'Vibrador Punto G - Gluxe - Control Por Aplicación', line: 'adulto', cat: 'Vibradores', price: 85000, old: 118000, stock: true },
@@ -56,6 +56,11 @@
     { name: 'GEL INTIMO BUTT 120 CC', line: 'adulto', cat: 'Geles y estimulantes', price: 5000, old: 6000, stock: false }
   ];
 
+  var ICONS = {
+    oil: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M27 4h10v8H27z" fill="#A8324D"/><path d="M25 12h14v8H25z"/><path d="M22 20h20c4 0 8 4 8 9v55c0 4-3 8-8 8H22c-5 0-8-4-8-8V29c0-5 4-9 8-9z" fill="#F7EDDC"/><path d="M14 52h36v32c0 4-3 8-8 8H22c-5 0-8-4-8-8z" fill="#E7C27A" opacity=".55"/><path d="M22 40h20M22 46h14"/></svg>',
+    gel: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M24 4h16v12H24z" fill="#A8324D"/><path d="M20 16h24l6 70H14z" fill="#F7EDDC"/><path d="M14 86h36" stroke-width="3"/><path d="M22 40h20M23 48h14"/><path d="M32 60c-4 5-6 8-6 11a6 6 0 0 0 12 0c0-3-2-6-6-11z" fill="#E58AA0" opacity=".7"/></svg>'
+  };
+
   var page = document.body.getAttribute('data-page');
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
   var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
@@ -72,7 +77,9 @@
     var i = PRODUCTS.indexOf(p);
     var img = p.img
       ? '<div class="product-img photo"><img src="' + esc(p.img) + '" width="700" height="875" alt="' + esc(p.name) + '" loading="lazy"></div>'
-      : '<div class="product-img"><span>' + esc(p.name.charAt(0)) + '</span></div>';
+      : p.icon
+        ? '<div class="product-img">' + ICONS[p.icon] + '</div>'
+        : '<div class="product-img"><span>' + esc(p.name.charAt(0)) + '</span></div>';
     var prices = p.price
       ? '<span class="old">' + fmt(p.old) + '</span><span class="price-row"><span class="price">' + fmt(p.price) + '</span><span class="off">' + Math.round((1 - p.price / p.old) * 100) + '% OFF</span></span><span class="small">3 cuotas sin interés</span>'
       : '<span class="price-row"><span class="price">Precio a consultar</span></span><span class="small">Consultanos por WhatsApp</span>';
@@ -97,7 +104,7 @@
   }
 
   // ---------- Portada ----------
-  if (page === 'home') {
+  if (page === 'home' && $('#perfumes-grid') && $('#cosmetica-grid')) {
     var renderPerfumes = function (f) {
       var list = PRODUCTS.filter(function (p) { return p.line === 'perfume' && (f === 'todos' || p.gen === f); });
       $('#perfumes-grid').innerHTML = list.map(function (p) { return productCard(p, 'PERFUME ' + p.gen.toUpperCase(), true); }).join('');
@@ -109,7 +116,7 @@
   }
 
   // ---------- Línea +18 ----------
-  if (page === 'adult') {
+  if (page === 'adult' && $('#adult-grid')) {
     var adult = PRODUCTS.filter(function (p) { return p.line === 'adulto'; });
     var cats = [];
     adult.forEach(function (p) { if (cats.indexOf(p.cat) < 0) cats.push(p.cat); });
@@ -128,7 +135,9 @@
   }
 
   // ---------- Carrito (se arma igual en las dos páginas) ----------
-  $('#cart-root').innerHTML =
+  var root = $('#cart-root');
+  if (!root) { root = document.createElement('div'); root.id = 'cart-root'; document.body.appendChild(root); }
+  root.innerHTML =
     '<button type="button" class="fab" id="fab" data-open-cart hidden>' +
       '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>' +
       'VER CARRITO (<span data-cart-count>0</span>)</button>' +
