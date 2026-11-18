@@ -2,7 +2,7 @@
 
 Sitio de Intimatta: perfumes de autor, fragancias con feromonas y cosmética íntima, con pedidos por WhatsApp.
 
-- `index.html` — portada con las cartas: La Emperatriz (perfumes de mujer), El Emperador (de hombre), Los Enamorados (unisex) y El Placer (lencería y cosmética íntima). El Loco, al final y muy discreto, lleva a la Línea +18
+- `index.html` — portada con las cartas: La Emperatriz (perfumes de mujer), El Emperador (de hombre), Los Enamorados (unisex) y El Placer (lencería y cosmética íntima). Lujuria, al final y muy discreta, lleva a la Línea +18
 - `mas18.html` — Línea +18, con confirmación de edad (solo se enlaza desde el pie de página y no aparece en buscadores)
 - `styles.css` — estilos
 - `app.js` — productos, filtros, carrito y armado del mensaje de WhatsApp

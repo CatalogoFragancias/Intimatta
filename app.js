@@ -136,7 +136,7 @@
     var c = cardById(id); if (!c || !$('#catalog')) return;
     currentCard = c;
     $('#catalog').className = 'overlay catalog' + (c.dark ? ' catalog-dark' : '');
-    $('#catalog-img').src = 'img/cartas/' + c.id + '.jpg';
+    $('#catalog-img').src = 'img/cartas/' + c.id + '.jpg?v=5';
     $('#catalog-img').alt = 'Carta del tarot: ' + c.name;
     $('#catalog-arcano').textContent = c.numeral + ' · ' + c.name.toUpperCase();
     $('#catalog-name').textContent = c.title;
@@ -155,7 +155,7 @@
     $('#cards-grid').innerHTML = CARDS.map(function (c) {
       return '<button type="button" class="tarot" data-open-card="' + c.id + '" aria-label="' + esc(c.name) + ': ver ' + esc(c.title.toLowerCase()) + '">' +
         '<span class="tarot-outer"><span class="tarot-inner">' +
-        '<span class="tarot-img"><img src="img/cartas/' + c.id + '.jpg" alt="Carta del tarot: ' + esc(c.name) + '"></span>' +
+        '<span class="tarot-img"><img src="img/cartas/' + c.id + '.jpg?v=5" alt="Carta del tarot: ' + esc(c.name) + '"></span>' +
         '<span class="rule"><span>✦</span></span>' +
         '<span class="tarot-cat">' + esc(c.label) + '</span>' +
         '<span class="tarot-sign">INTIMATTA</span>' +
