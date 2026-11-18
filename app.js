@@ -109,7 +109,8 @@
     { id: 'emperatriz', numeral: 'III', name: 'La Emperatriz', title: 'Perfumes Donna', label: 'PERFUMES DE MUJER', filter: function (p) { return p.line === 'perfume' && p.gen === 'Donna'; }, meaning: 'Abundancia, belleza y una presencia que se siente.', dark: true },
     { id: 'emperador', numeral: 'IV', name: 'El Emperador', title: 'Perfumes Homme', label: 'PERFUMES DE HOMBRE', filter: function (p) { return p.line === 'perfume' && p.gen === 'Homme'; }, meaning: 'Firmeza, seguridad y una estela que no pide permiso.', dark: true },
     { id: 'enamorados', numeral: 'VI', name: 'Los Enamorados', title: 'Perfumes Unisex', label: 'PERFUMES UNISEX', filter: function (p) { return p.line === 'perfume' && p.gen === 'Unisex'; }, meaning: 'Elegirse y compartir: fragancias para cualquier piel.', dark: true },
-    { id: 'placer', numeral: 'II', name: 'El Placer', title: 'Lencería y cosmética íntima', label: 'LENCERÍA Y COSMÉTICA', filter: function (p) { return p.line === 'cosmetica'; }, meaning: 'Aceites, geles, cremas y lencería para tus rituales de cuidado.', dark: false }
+    { id: 'placer', numeral: 'II', name: 'El Placer', title: 'Cosmética íntima', label: 'COSMÉTICA ÍNTIMA', filter: function (p) { return p.line === 'cosmetica' && p.group !== 'Lencería'; }, meaning: 'Aceites, geles y cremas para tus rituales de cuidado.', dark: false },
+    { id: 'lujuria', numeral: 'XI', name: 'Lujuria', title: 'Lencería', label: 'LENCERÍA', filter: function (p) { return p.line === 'cosmetica' && p.group === 'Lencería'; }, meaning: 'Vestirte para vos: encaje, transparencias y actitud.', dark: false }
   ];
   var cardById = function (id) { return CARDS.filter(function (c) { return c.id === id; })[0]; };
 
@@ -136,7 +137,7 @@
     var c = cardById(id); if (!c || !$('#catalog')) return;
     currentCard = c;
     $('#catalog').className = 'overlay catalog' + (c.dark ? ' catalog-dark' : '');
-    $('#catalog-img').src = 'img/cartas/' + c.id + '.jpg?v=5';
+    $('#catalog-img').src = 'img/cartas/' + c.id + '.jpg?v=6';
     $('#catalog-img').alt = 'Carta del tarot: ' + c.name;
     $('#catalog-arcano').textContent = c.numeral + ' · ' + c.name.toUpperCase();
     $('#catalog-name').textContent = c.title;
@@ -155,7 +156,7 @@
     $('#cards-grid').innerHTML = CARDS.map(function (c) {
       return '<button type="button" class="tarot" data-open-card="' + c.id + '" aria-label="' + esc(c.name) + ': ver ' + esc(c.title.toLowerCase()) + '">' +
         '<span class="tarot-outer"><span class="tarot-inner">' +
-        '<span class="tarot-img"><img src="img/cartas/' + c.id + '.jpg?v=5" alt="Carta del tarot: ' + esc(c.name) + '"></span>' +
+        '<span class="tarot-img"><img src="img/cartas/' + c.id + '.jpg?v=6" alt="Carta del tarot: ' + esc(c.name) + '"></span>' +
         '<span class="rule"><span>✦</span></span>' +
         '<span class="tarot-cat">' + esc(c.label) + '</span>' +
         '<span class="tarot-sign">INTIMATTA</span>' +

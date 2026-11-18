@@ -2,7 +2,7 @@
 
 Sitio de Intimatta: perfumes de autor, fragancias con feromonas y cosmética íntima, con pedidos por WhatsApp.
 
-- `index.html` — portada con las cartas: La Emperatriz (perfumes de mujer), El Emperador (de hombre), Los Enamorados (unisex) y El Placer (lencería y cosmética íntima). Lujuria, al final y muy discreta, lleva a la Línea +18
+- `index.html` — portada con las cartas: La Emperatriz (perfumes de mujer), El Emperador (de hombre), Los Enamorados (unisex) y El Placer (cosmética íntima) y Lujuria (lencería). Un link de texto chico al final lleva a la Línea +18
 - `mas18.html` — Línea +18, con confirmación de edad (solo se enlaza desde el pie de página y no aparece en buscadores)
 - `styles.css` — estilos
 - `app.js` — productos, filtros, carrito y armado del mensaje de WhatsApp
@@ -17,7 +17,7 @@ Todo está en `app.js`, en la lista `PRODUCTS`:
 `price: null` muestra "Precio a consultar".
 
 ## Links directos a cada carta
-`#emperatriz`, `#emperador`, `#enamorados` y `#placer` abren el catálogo de esa carta (por ejemplo, para la bio o las historias).
+`#emperatriz`, `#emperador`, `#enamorados` y `#placer`, `#lujuria` abren el catálogo de esa carta (por ejemplo, para la bio o las historias).
 
 ## Anuncios en Instagram / Facebook
 Usá como destino `index.html` o el link de una carta de perfumes (`index.html#emperatriz`). No uses `mas18.html` en anuncios.

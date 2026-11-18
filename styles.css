@@ -122,7 +122,8 @@ a:hover { color: var(--ink); }
 
 /* Cartas */
 .cards-section { background: var(--sand); border-top: 1px solid var(--line); padding: 80px 0 88px; }
-.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; max-width: 1080px; margin: 0 auto; }
+.cards-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 22px; max-width: 1180px; margin: 0 auto; }
+.cards-grid .tarot { flex: 0 1 210px; }
 .tarot { display: flex; flex-direction: column; padding: 0; border: none; background: transparent; cursor: pointer; font-family: var(--sans); color: var(--ink); text-align: center; transition: transform .2s ease; -webkit-appearance: none; appearance: none; touch-action: manipulation; }
 @media (hover: hover) { .tarot:hover { transform: translateY(-4px); } }
 .tarot-outer { flex: 1 1 auto; display: flex; flex-direction: column; padding: 10px; background: var(--cream-2); border: 1px solid var(--ink); border-radius: 12px; box-shadow: 0 3px 0 var(--ink); }
@@ -254,7 +255,8 @@ a:hover { color: var(--ink); }
   .story-row { gap: 32px; padding-top: 56px; padding-bottom: 56px; }
   .story-img img { width: 240px; }
   .cart-panel { padding: 20px 18px 32px; }
-  .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .cards-grid { gap: 12px; }
+  .cards-grid .tarot { flex: 0 1 calc(50% - 6px); }
   .tarot-outer { padding: 6px; }
   .tarot-inner { padding: 8px 8px 10px; gap: 8px; }
   .tarot-cat { font-size: 10px; letter-spacing: .08em; }
