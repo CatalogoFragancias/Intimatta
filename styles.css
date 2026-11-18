@@ -120,6 +120,51 @@ a:hover { color: var(--ink); }
 .add.added, .product-dark .add.added { background: var(--rose); color: var(--cream); }
 .add[disabled] { background: transparent !important; border: 1px solid #8A7A68; color: #8A7A68 !important; cursor: default; }
 
+/* Cartas */
+.cards-section { background: var(--sand); border-top: 1px solid var(--line); padding: 80px 0 88px; }
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 24px; max-width: 1080px; margin: 0 auto; }
+.tarot { display: flex; flex-direction: column; padding: 0; border: none; background: transparent; cursor: pointer; font-family: var(--sans); color: var(--ink); text-align: center; transition: transform .2s ease; -webkit-appearance: none; appearance: none; touch-action: manipulation; }
+@media (hover: hover) { .tarot:hover { transform: translateY(-4px); } }
+.tarot-outer { flex: 1 1 auto; display: flex; flex-direction: column; padding: 10px; background: var(--cream-2); border: 1px solid var(--ink); border-radius: 12px; box-shadow: 0 3px 0 var(--ink); }
+.tarot-inner { flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 12px 12px 14px; border: 1.5px solid var(--ink); outline: 1px solid var(--ink); outline-offset: -6px; border-radius: 6px; }
+.tarot-img { display: flex; align-items: center; justify-content: center; width: 100%; height: 0; padding-bottom: 150%; position: relative; }
+.tarot-img img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; }
+.tarot-img img { border-radius: 8px; }
+.rule { display: flex; align-items: center; gap: 8px; width: 80%; }
+.rule::before, .rule::after { content: ""; flex: 1; height: 1px; background: var(--ink); }
+.rule span { color: var(--rose); font-size: 10px; }
+.tarot-cat { font-size: 12px; letter-spacing: .18em; font-weight: 700; color: var(--rose); }
+.tarot-sign { font-size: 9px; letter-spacing: .4em; color: #5C4B3B; }
+.nav button { font-family: var(--sans); font-size: 13px; letter-spacing: 0.16em; font-weight: 700; color: var(--ink); background: none; border: none; padding: 0; min-height: 44px; cursor: pointer; display: inline-flex; align-items: center; }
+
+/* Catálogo de una carta */
+.btn-ghost { background: var(--cream-2); color: var(--ink); min-height: 46px; padding: 0 22px; font-size: 12px; }
+.catalog { background: var(--sand); color: var(--ink); overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.catalog-dark { background: var(--ink); color: var(--cream); }
+.catalog-dark .btn-ghost { background: transparent; color: var(--cream); border-color: var(--cream); }
+.catalog-dark .btn-dark { background: var(--cream); color: var(--ink); border-color: var(--cream); }
+.catalog-dark .meaning, .catalog-dark .count { color: #D8C9B2; }
+.catalog-dark .eyebrow { color: var(--rose-light); }
+.catalog-dark .catalog-head { border-color: #3A322C; }
+.catalog-inner { padding-top: 32px; padding-bottom: 96px; }
+.catalog-head { display: flex; flex-wrap: wrap; align-items: center; gap: 28px; margin: 32px 0 36px; padding-bottom: 28px; border-bottom: 1px solid var(--ink); }
+.catalog-head img { width: 120px; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, .3); }
+.catalog-title { flex: 999 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.catalog-title h2 { margin: 0; font-family: var(--serif); font-weight: 600; font-size: 44px; font-size: clamp(34px, 6vw, 54px); line-height: 1.05; }
+.meaning { margin: 0; font-family: var(--serif); font-style: italic; font-size: 21px; color: var(--muted); }
+.count { font-size: 13px; letter-spacing: .16em; color: var(--muted); }
+.catalog .chips { justify-content: flex-start; }
+.center { display: flex; justify-content: center; margin-top: 48px; }
+
+/* El Loco: acceso muy secundario */
+.loco-strip { background: var(--cream); padding: 28px 0; border-top: 1px solid var(--line); }
+.loco-link { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: #8C8073; opacity: .75; }
+.loco-link:hover { opacity: 1; color: var(--muted); }
+.loco-link img { width: 34px; height: auto; border-radius: 3px; filter: grayscale(1); }
+.loco-link > span { display: flex; flex-direction: column; gap: 2px; }
+.loco-num { font-size: 10px; letter-spacing: .2em; font-weight: 700; }
+.loco-text { font-size: 12px; }
+
 /* Manifiesto y cómo comprar */
 .manifesto { text-align: center; padding: 80px 24px; display: flex; flex-direction: column; align-items: center; gap: 18px; background: var(--cream-2); border-top: 1px solid var(--line); }
 .manifesto .spaced { color: var(--rose); letter-spacing: .6em; }
@@ -209,18 +254,26 @@ a:hover { color: var(--ink); }
   .story-row { gap: 32px; padding-top: 56px; padding-bottom: 56px; }
   .story-img img { width: 240px; }
   .cart-panel { padding: 20px 18px 32px; }
+  .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .tarot-outer { padding: 6px; }
+  .tarot-inner { padding: 8px 8px 10px; gap: 8px; }
+  .tarot-cat { font-size: 10px; letter-spacing: .08em; }
+  .nav button { font-size: 10.5px; letter-spacing: .04em; white-space: nowrap; flex: 0 0 auto; }
+  .catalog-head { gap: 18px; }
+  .catalog-head img { width: 90px; }
 }
 
 @media (max-width: 359px) {
   .tagline { display: none; }
   .wordmark { font-size: 24px; }
-  .nav a { font-size: 10px; letter-spacing: 0; }
+  .nav a, .nav button { font-size: 10px; letter-spacing: 0; }
+  .nav { gap: 4px; }
 }
 
 /* Safari viejo (iOS 14.4 o anterior) no soporta gap en flex: márgenes de respaldo */
 @supports not (inset: 0) {
   .hero > * + *, .hero-actions > * + *, .header-row > * + *, .story-row > * + * { margin-left: 16px; }
-  .hero-text > * + *, .section-head > * + *, .story-text > * + *, .product > * + *, .cart-panel > * + *, .order-form > * + *, .how-grid div > * + *, .footer-links > * + *, .age-box > * + * { margin-top: 12px; }
+  .hero-text > * + *, .section-head > * + *, .catalog-title > * + *, .tarot-inner > * + *, .story-text > * + *, .product > * + *, .cart-panel > * + *, .order-form > * + *, .how-grid div > * + *, .footer-links > * + *, .age-box > * + * { margin-top: 12px; }
   .brand > * + *, .price-row > * + *, .btn > * + *, .chips > * + * { margin-left: 10px; }
   .nav > * + * { margin-left: 20px; }
 }

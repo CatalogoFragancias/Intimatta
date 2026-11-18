@@ -15,11 +15,11 @@
     { name: 'Ambush', cartName: 'Perfume Ambush', line: 'perfume', gen: 'Homme', price: null, stock: true, img: 'img/perfumes/ambush.jpg', desc: 'Eau de Parfum · Homme · 60 ml' },
 
     // Cosmética íntima (portada)
-    { name: 'Aceite corporal Hot Inevitable 125 ml', line: 'cosmetica', label: 'ACEITE CORPORAL', icon: 'oil', price: 17000, old: 18000, stock: true, desc: 'Aceite corporal con efecto calor para masajes.' },
-    { name: 'Aceite para masajes Natural 60 ml', line: 'cosmetica', label: 'ACEITE DE MASAJE', icon: 'oil', price: 4500, old: 5000, stock: true, desc: 'Aceite neutro para masajes relajantes.' },
-    { name: 'Aceite para masajes Uva 60 ml', line: 'cosmetica', label: 'ACEITE DE MASAJE', icon: 'oil', price: 3500, old: 5000, stock: true, desc: 'Aceite de masaje con aroma a uva.' },
-    { name: 'Gel íntimo Warming 120 cc', line: 'cosmetica', label: 'GEL ÍNTIMO', icon: 'gel', price: 5000, old: 6000, stock: false, desc: 'Gel íntimo a base de agua con efecto calor.' },
-    { name: 'Magic Dual — aceite para masajes y gel íntimo', line: 'cosmetica', label: 'ACEITE 2 EN 1', icon: 'oil', price: 13000, old: 20000, stock: false, desc: 'Aceite para masajes que también funciona como gel íntimo.' },
+    { name: 'Aceite corporal Hot Inevitable 125 ml', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE CORPORAL', icon: 'oil', price: 17000, old: 18000, stock: true, desc: 'Aceite corporal con efecto calor para masajes.' },
+    { name: 'Aceite para masajes Natural 60 ml', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE DE MASAJE', icon: 'oil', price: 4500, old: 5000, stock: true, desc: 'Aceite neutro para masajes relajantes.' },
+    { name: 'Aceite para masajes Uva 60 ml', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE DE MASAJE', icon: 'oil', price: 3500, old: 5000, stock: true, desc: 'Aceite de masaje con aroma a uva.' },
+    { name: 'Gel íntimo Warming 120 cc', line: 'cosmetica', group: 'Cuidado íntimo', label: 'GEL ÍNTIMO', icon: 'gel', price: 5000, old: 6000, stock: false, desc: 'Gel íntimo a base de agua con efecto calor.' },
+    { name: 'Magic Dual — aceite para masajes y gel íntimo', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE 2 EN 1', icon: 'oil', price: 13000, old: 20000, stock: false, desc: 'Aceite para masajes que también funciona como gel íntimo.' },
 
     // Línea +18 (solo en mas18.html)
     { name: 'Vibrador Punto G - Gluxe - Control Por Aplicación', line: 'adulto', cat: 'Vibradores', price: 85000, old: 118000, stock: true },
@@ -45,11 +45,11 @@
     { name: 'Pezoneras Champs 8 Metal Y Goma Suave Ajustable', line: 'adulto', cat: 'BDSM', price: 15000, old: 20500, stock: true },
     { name: 'Antifaz Cuero Resistente Adaptable', line: 'adulto', cat: 'BDSM', price: 11000, old: 15000, stock: true },
     { name: 'Esposas De Cuero Rosa Ajustables', line: 'adulto', cat: 'BDSM', price: 10000, old: 11000, stock: true },
-    { name: 'Body Berlin - Negro', line: 'adulto', cat: 'Lencería', price: 25000, old: 27000, stock: true },
-    { name: 'Body Ramos Encaje', line: 'adulto', cat: 'Lencería', price: 31000, old: 35000, stock: true },
-    { name: 'Conjunto Kiss Lenceria Cola Less - Negro', line: 'adulto', cat: 'Lencería', price: 28000, old: 30000, stock: true },
-    { name: 'BUSTIER LADY NEGRO - BORDO', line: 'adulto', cat: 'Lencería', price: 36000, old: 40000, stock: true },
-    { name: 'Body Cosmos De Encaje', line: 'adulto', cat: 'Lencería', price: 24000, old: 26000, stock: true },
+    { name: 'Body Berlin - Negro', line: 'cosmetica', group: 'Lencería', label: 'LENCERÍA', icon: 'lace', price: 25000, old: 27000, stock: true },
+    { name: 'Body Ramos Encaje', line: 'cosmetica', group: 'Lencería', label: 'LENCERÍA', icon: 'lace', price: 31000, old: 35000, stock: true },
+    { name: 'Conjunto Kiss Lenceria Cola Less - Negro', line: 'cosmetica', group: 'Lencería', label: 'LENCERÍA', icon: 'lace', price: 28000, old: 30000, stock: true },
+    { name: 'BUSTIER LADY NEGRO - BORDO', line: 'cosmetica', group: 'Lencería', label: 'LENCERÍA', icon: 'lace', price: 36000, old: 40000, stock: true },
+    { name: 'Body Cosmos De Encaje', line: 'cosmetica', group: 'Lencería', label: 'LENCERÍA', icon: 'lace', price: 24000, old: 26000, stock: true },
     { name: 'OLEO ORGASMICO ESTIMULANTE XXX FOR HER', line: 'adulto', cat: 'Geles y estimulantes', price: 14000, old: 16000, stock: true },
     { name: 'GEL INTIMO SENS BOMB - MACA 70 GRS', line: 'adulto', cat: 'Geles y estimulantes', price: 11000, old: 12000, stock: false },
     { name: 'GEL INTIMO LUBRICANTE ANAL DESIRE COCONUT', line: 'adulto', cat: 'Geles y estimulantes', price: 8000, old: 10000, stock: false },
@@ -58,6 +58,7 @@
 
   var ICONS = {
     oil: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M27 4h10v8H27z" fill="#A8324D"/><path d="M25 12h14v8H25z"/><path d="M22 20h20c4 0 8 4 8 9v55c0 4-3 8-8 8H22c-5 0-8-4-8-8V29c0-5 4-9 8-9z" fill="#F7EDDC"/><path d="M14 52h36v32c0 4-3 8-8 8H22c-5 0-8-4-8-8z" fill="#E7C27A" opacity=".55"/><path d="M22 40h20M22 46h14"/></svg>',
+    lace: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 22c0-5 6-5 6-9s-3-6-6-6-6 2-6 5"/><path d="M32 22L6 44h52z"/><path d="M14 44c0 10 4 18 18 30 14-12 18-20 18-30" fill="#E58AA0" opacity=".45"/><path d="M20 54c4 2 8 2 12 0s8-2 12 0"/></svg>',
     gel: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M24 4h16v12H24z" fill="#A8324D"/><path d="M20 16h24l6 70H14z" fill="#F7EDDC"/><path d="M14 86h36" stroke-width="3"/><path d="M22 40h20M23 48h14"/><path d="M32 60c-4 5-6 8-6 11a6 6 0 0 0 12 0c0-3-2-6-6-11z" fill="#E58AA0" opacity=".7"/></svg>'
   };
 
@@ -103,16 +104,67 @@
     });
   }
 
-  // ---------- Portada ----------
-  if (page === 'home' && $('#perfumes-grid') && $('#cosmetica-grid')) {
-    var renderPerfumes = function (f) {
-      var list = PRODUCTS.filter(function (p) { return p.line === 'perfume' && (f === 'todos' || p.gen === f); });
-      $('#perfumes-grid').innerHTML = list.map(function (p) { return productCard(p, 'PERFUME ' + p.gen.toUpperCase(), true); }).join('');
-    };
-    renderPerfumes('todos');
-    setupChips($('#perfume-chips'), renderPerfumes);
-    $('#cosmetica-grid').innerHTML = PRODUCTS.filter(function (p) { return p.line === 'cosmetica'; })
-      .map(function (p) { return productCard(p, p.label, false); }).join('');
+  // ---------- Portada: cartas ----------
+  var CARDS = [
+    { id: 'emperatriz', numeral: 'III', name: 'La Emperatriz', title: 'Perfumes Donna', label: 'PERFUMES DE MUJER', filter: function (p) { return p.line === 'perfume' && p.gen === 'Donna'; }, meaning: 'Abundancia, belleza y una presencia que se siente.', dark: true },
+    { id: 'emperador', numeral: 'IV', name: 'El Emperador', title: 'Perfumes Homme', label: 'PERFUMES DE HOMBRE', filter: function (p) { return p.line === 'perfume' && p.gen === 'Homme'; }, meaning: 'Firmeza, seguridad y una estela que no pide permiso.', dark: true },
+    { id: 'enamorados', numeral: 'VI', name: 'Los Enamorados', title: 'Perfumes Unisex', label: 'PERFUMES UNISEX', filter: function (p) { return p.line === 'perfume' && p.gen === 'Unisex'; }, meaning: 'Elegirse y compartir: fragancias para cualquier piel.', dark: true },
+    { id: 'placer', numeral: 'II', name: 'El Placer', title: 'Lencería y cosmética íntima', label: 'LENCERÍA Y COSMÉTICA', filter: function (p) { return p.line === 'cosmetica'; }, meaning: 'Aceites, geles, cremas y lencería para tus rituales de cuidado.', dark: false }
+  ];
+  var cardById = function (id) { return CARDS.filter(function (c) { return c.id === id; })[0]; };
+
+  function renderCatalog(c, group) {
+    var list = PRODUCTS.filter(c.filter);
+    var groups = [];
+    list.forEach(function (p) { if (p.group && groups.indexOf(p.group) < 0) groups.push(p.group); });
+    var chips = $('#catalog-chips');
+    if (groups.length > 1) {
+      chips.hidden = false;
+      chips.innerHTML = ['Todo'].concat(groups).map(function (g, i) {
+        var on = (group || 'Todo') === g;
+        return '<button type="button" class="chip' + (on ? ' active' : '') + '" data-group="' + esc(g) + '" aria-pressed="' + on + '">' + esc(g) + '</button>';
+      }).join('');
+    } else { chips.hidden = true; chips.innerHTML = ''; }
+    var shown = list.filter(function (p) { return !group || group === 'Todo' || p.group === group; });
+    $('#catalog-count').textContent = shown.length + (shown.length === 1 ? ' PRODUCTO' : ' PRODUCTOS');
+    $('#catalog-grid').innerHTML = shown.map(function (p) {
+      return productCard(p, p.label || ('PERFUME ' + String(p.gen).toUpperCase()), c.dark);
+    }).join('');
+  }
+  var currentCard = null;
+  function openCard(id) {
+    var c = cardById(id); if (!c || !$('#catalog')) return;
+    currentCard = c;
+    $('#catalog').className = 'overlay catalog' + (c.dark ? ' catalog-dark' : '');
+    $('#catalog-img').src = 'img/cartas/' + c.id + '.jpg';
+    $('#catalog-img').alt = 'Carta del tarot: ' + c.name;
+    $('#catalog-arcano').textContent = c.numeral + ' · ' + c.name.toUpperCase();
+    $('#catalog-name').textContent = c.title;
+    $('#catalog-meaning').textContent = c.meaning;
+    renderCatalog(c, null);
+    var ov = $('#catalog'); ov.hidden = false; ov.scrollTop = 0; lock();
+    try { history.replaceState(null, '', '#' + c.id); } catch (e) {}
+  }
+  function closeCatalog() {
+    if (!$('#catalog')) return;
+    $('#catalog').hidden = true; lock();
+    try { history.replaceState(null, '', '#cartas'); } catch (e) {}
+  }
+
+  if (page === 'home' && $('#cards-grid')) {
+    $('#cards-grid').innerHTML = CARDS.map(function (c) {
+      return '<button type="button" class="tarot" data-open-card="' + c.id + '" aria-label="' + esc(c.name) + ': ver ' + esc(c.title.toLowerCase()) + '">' +
+        '<span class="tarot-outer"><span class="tarot-inner">' +
+        '<span class="tarot-img"><img src="img/cartas/' + c.id + '.jpg" alt="Carta del tarot: ' + esc(c.name) + '"></span>' +
+        '<span class="rule"><span>✦</span></span>' +
+        '<span class="tarot-cat">' + esc(c.label) + '</span>' +
+        '<span class="tarot-sign">INTIMATTA</span>' +
+        '</span></span></button>';
+    }).join('');
+    $('#catalog-chips').addEventListener('click', function (e) {
+      var t = e.target; while (t && t.tagName !== 'BUTTON') t = t.parentNode;
+      if (t && currentCard) renderCatalog(currentCard, t.getAttribute('data-group'));
+    });
   }
 
   // ---------- Línea +18 ----------
@@ -201,7 +253,7 @@
         '<button type="button" class="remove" data-remove data-name="' + esc(x.name) + '">Quitar</button></div></div>';
     }).join('');
   }
-  function lock() { document.body.classList.toggle('locked', !$('#cart').hidden || (page === 'adult' && !$('#age-gate').hidden)); }
+  function lock() { document.body.classList.toggle('locked', !$('#cart').hidden || ($('#catalog') && !$('#catalog').hidden) || (page === 'adult' && !$('#age-gate').hidden)); }
   function openCart() { $('#cart').hidden = false; renderCart(); lock(); }
   function closeCart() { $('#cart').hidden = true; renderCart(); lock(); }
 
@@ -209,6 +261,8 @@
     var t = e.target;
     while (t && t !== document && !(t.tagName === 'BUTTON' || t.tagName === 'A')) t = t.parentNode;
     if (!t || t === document) return;
+    if (t.hasAttribute('data-open-card')) { openCard(t.getAttribute('data-open-card')); return; }
+    if (t.hasAttribute('data-close-catalog')) { closeCatalog(); return; }
     if (t.hasAttribute('data-open-cart')) { openCart(); return; }
     if (t.hasAttribute('data-close-cart')) { closeCart(); return; }
     if (t.hasAttribute('data-add')) {
@@ -220,7 +274,10 @@
     if (t.hasAttribute('data-qty')) { changeQty(t.getAttribute('data-name'), +t.getAttribute('data-qty')); return; }
     if (t.hasAttribute('data-remove')) { changeQty(t.getAttribute('data-name'), -Infinity); return; }
   });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('#cart').hidden) closeCart(); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (!$('#cart').hidden) closeCart(); else if ($('#catalog') && !$('#catalog').hidden) closeCatalog();
+  });
 
   $('#order-form').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -245,4 +302,11 @@
   });
 
   renderCart();
+  // Abrir una carta desde el link (ej: .../#emperatriz)
+  var h = (location.hash || '').slice(1);
+  if (page === 'home' && cardById(h)) openCard(h);
+  window.addEventListener('hashchange', function () {
+    var k = (location.hash || '').slice(1);
+    if (page === 'home' && cardById(k) && (!currentCard || currentCard.id !== k || $('#catalog').hidden)) openCard(k);
+  });
 })();

@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,600;0,6..96,700;1,6..96,500;1,6..96,600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="styles.css?v=4">
 </head>
 <body data-page="home">
 
@@ -32,8 +32,8 @@
       </span>
     </a>
     <nav class="nav" aria-label="Principal">
-      <a href="#perfumes">PERFUMES</a>
-      <a href="#cosmetica">COSMÉTICA</a>
+      <a href="#cartas">PERFUMES</a>
+      <button type="button" data-open-card="placer">COSMÉTICA</button>
       <a href="#como-comprar">CÓMO COMPRAR</a>
       <a href="#contacto">CONTACTO</a>
     </nav>
@@ -56,27 +56,21 @@
       <h1>Tu piel. Tu aroma.<br><em>Tus reglas.</em></h1>
       <p class="lead">Perfumes de autor, fragancias con feromonas y cosmética íntima para tus rituales de cuidado. Enviados con total discreción.</p>
       <div class="hero-actions">
-        <a href="#perfumes" class="btn btn-dark">VER PERFUMES</a>
-        <a href="#cosmetica" class="btn btn-outline">COSMÉTICA ÍNTIMA</a>
+        <a href="#cartas" class="btn btn-dark">ELEGÍ TU CARTA</a>
+        <button type="button" class="btn btn-outline" data-open-card="placer">COSMÉTICA ÍNTIMA</button>
       </div>
     </div>
   </section>
 
-  <!-- Perfumes -->
-  <section id="perfumes" class="perfumes">
+  <!-- Cartas -->
+  <section id="cartas" class="cards-section">
     <div class="wrap">
-      <div class="section-head light-head">
-        <p class="eyebrow pink">LÍNEA PROPIA ✦ EAU DE PARFUM 60 ML</p>
-        <h2>Perfumes Intimatta<sup>✦</sup></h2>
-        <p class="muted-light">Fragancias de autor para llevar en la piel. Algunas con feromonas: consultanos y te ayudamos a elegir la tuya.</p>
+      <div class="section-head">
+        <p class="eyebrow">ARCANOS INTIMATTA</p>
+        <h2>Elegí tu carta</h2>
+        <p class="muted">Cada carta guarda una parte de la colección. Tocala y descubrí lo que tiene para vos.</p>
       </div>
-      <div class="chips" aria-label="Filtrar perfumes" id="perfume-chips">
-        <button type="button" class="chip active" data-filter="todos" aria-pressed="true">Todos</button>
-        <button type="button" class="chip" data-filter="Donna" aria-pressed="false">Donna</button>
-        <button type="button" class="chip" data-filter="Homme" aria-pressed="false">Homme</button>
-        <button type="button" class="chip" data-filter="Unisex" aria-pressed="false">Unisex</button>
-      </div>
-      <div class="products-grid" id="perfumes-grid"></div>
+      <div class="cards-grid" id="cards-grid"></div>
     </div>
   </section>
 
@@ -95,18 +89,6 @@
     </div>
   </section>
 
-  <!-- Cosmética -->
-  <section id="cosmetica" class="cosmetica">
-    <div class="wrap">
-      <div class="section-head">
-        <p class="eyebrow">CUIDADO ✦ MASAJE ✦ BIENESTAR</p>
-        <h2>Cosmética íntima</h2>
-        <p class="muted">Aceites, geles y cremas para el cuidado de tu piel y tus momentos de relax, sola o en pareja.</p>
-      </div>
-      <div class="products-grid" id="cosmetica-grid"></div>
-    </div>
-  </section>
-
   <section class="manifesto">
     <span class="spaced">✦ ♥ ✦</span>
     <p>Cuidarte <em>también</em> es un ritual.</p>
@@ -119,7 +101,42 @@
       <div><span class="roman">III</span><h3>Te asesoramos</h3><p>Escribinos por WhatsApp y te ayudamos a elegir tu fragancia.</p></div>
     </div>
   </section>
+  <section class="loco-strip">
+    <div class="wrap">
+      <a href="mas18.html" class="loco-link" rel="nofollow">
+        <img src="img/cartas/loco.jpg" width="320" height="480" alt="" loading="lazy">
+        <span><span class="loco-num">0 · EL LOCO</span><span class="loco-text">Línea +18, solo para mayores</span></span>
+      </a>
+    </div>
+  </section>
 </main>
+
+<!-- Catálogo de cada carta -->
+<div class="overlay catalog" id="catalog" role="dialog" aria-modal="true" aria-labelledby="catalog-name" hidden>
+  <div class="wrap catalog-inner">
+    <button type="button" class="btn btn-ghost" data-close-catalog>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+      VOLVER A LAS CARTAS
+    </button>
+    <div class="catalog-head">
+      <img id="catalog-img" src="img/cartas/emperador.jpg" width="640" height="960" alt="">
+      <div class="catalog-title">
+        <p class="eyebrow" id="catalog-arcano"></p>
+        <h2 id="catalog-name"></h2>
+        <p class="meaning" id="catalog-meaning"></p>
+      </div>
+      <span class="count" id="catalog-count"></span>
+    </div>
+    <div class="chips" id="catalog-chips" hidden></div>
+    <div class="products-grid" id="catalog-grid"></div>
+    <div class="center">
+      <button type="button" class="btn btn-dark" data-close-catalog>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+        ELEGIR OTRA CARTA
+      </button>
+    </div>
+  </div>
+</div>
 
 <footer id="contacto" class="footer">
   <div class="wrap footer-row">
@@ -140,11 +157,10 @@
   </div>
   <div class="wrap footer-legal">
     <span>Productos para mayores de 18 años.</span>
-    <a href="mas18.html" class="adult-link" rel="nofollow">Línea +18</a>
   </div>
 </footer>
 
 <div id="cart-root"></div>
-<script src="app.js?v=3" defer></script>
+<script src="app.js?v=4" defer></script>
 </body>
 </html>
