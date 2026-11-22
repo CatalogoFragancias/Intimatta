@@ -40,6 +40,24 @@ function clean(input) {
     if (Array.isArray(v.imgs)) o.imgs = v.imgs.filter(okImg).slice(0, 4);
     // Talles (lencería): hasta 12, cortos
     if (Array.isArray(v.talles)) o.talles = v.talles.map((t) => str(t, 12)).filter(Boolean).slice(0, 12);
+    // Mostrar en la página de Instagram (/tienda)
+    if (typeof v.ig === 'boolean') o.ig = v.ig;
+    // Productos creados desde el panel: la clave empieza con "nuevo:" y llevan su sección
+    if (key.indexOf('nuevo:') === 0 && !/^nuevo:[a-z0-9-]{4,40}$/.test(key)) continue;
+    if (/^nuevo:[a-z0-9-]{4,40}$/.test(key)) {
+      const line = ['perfume', 'cosmetica', 'adulto'].includes(v.line) ? v.line : null;
+      if (!line || !o.name) continue;
+      o.nuevo = true;
+      o.line = line;
+      if (line === 'perfume') o.gen = ['Donna', 'Homme', 'Unisex'].includes(v.gen) ? v.gen : 'Unisex';
+      if (line === 'cosmetica') {
+        o.group = ['Cuidado íntimo', 'Velas aromáticas', 'Lencería'].includes(v.group) ? v.group : 'Cuidado íntimo';
+        o.label = str(v.label, 40) || '';
+      }
+      if (line === 'adulto') o.cat = str(v.cat, 40) || 'Otros';
+      if (o.price === undefined) o.price = null;
+      if (o.stock === undefined) o.stock = true;
+    }
     if (Object.keys(o).length) out[key] = o;
   }
   return out;

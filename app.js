@@ -17,9 +17,9 @@
     { name: 'Ambush', cartName: 'Perfume Ambush', line: 'perfume', gen: 'Homme', price: null, stock: true, img: 'img/perfumes/ambush.jpg', desc: 'Eau de Parfum · Homme · 60 ml' },
 
     // Cosmética íntima (portada)
-    { name: 'Aceite corporal Hot Inevitable 125 ml', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE CORPORAL', img: 'img/cosmetica/aceite-hot-inevitable.jpg', icon: 'oil', price: 17000, old: 18000, stock: true, desc: 'Aceite corporal con efecto calor para masajes.' },
-    { name: 'Aceite para masajes Natural 60 ml', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE DE MASAJE', img: 'img/cosmetica/aceite-natural-60ml.jpg', icon: 'oil', price: 4500, old: 5000, stock: true, desc: 'Aceite neutro para masajes relajantes.' },
-    { name: 'Aceite para masajes Uva 60 ml', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE DE MASAJE', img: 'img/cosmetica/aceite-uva-60ml.jpg', icon: 'oil', price: 3500, old: 5000, stock: true, desc: 'Aceite de masaje con aroma a uva.' },
+    { name: 'Aceite corporal Hot Inevitable 125 ml', ig: true, line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE CORPORAL', img: 'img/cosmetica/aceite-hot-inevitable.jpg', icon: 'oil', price: 17000, old: 18000, stock: true, desc: 'Aceite corporal con efecto calor para masajes.' },
+    { name: 'Aceite para masajes Natural 60 ml', ig: true, line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE DE MASAJE', img: 'img/cosmetica/aceite-natural-60ml.jpg', icon: 'oil', price: 4500, old: 5000, stock: true, desc: 'Aceite neutro para masajes relajantes.' },
+    { name: 'Aceite para masajes Uva 60 ml', ig: true, line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE DE MASAJE', img: 'img/cosmetica/aceite-uva-60ml.jpg', icon: 'oil', price: 3500, old: 5000, stock: true, desc: 'Aceite de masaje con aroma a uva.' },
     { name: 'Gel íntimo Warming 120 cc', line: 'cosmetica', group: 'Cuidado íntimo', label: 'GEL ÍNTIMO', img: 'img/cosmetica/gel-warming-120cc.jpg', icon: 'gel', price: 5000, old: 6000, stock: false, desc: 'Gel íntimo a base de agua con efecto calor.' },
     { name: 'Magic Dual — aceite para masajes y gel íntimo', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE 2 EN 1', img: 'img/cosmetica/magic-dual.jpg', icon: 'oil', price: 13000, old: 20000, stock: false, desc: 'Aceite para masajes que también funciona como gel íntimo.' },
 
@@ -62,7 +62,16 @@
   // usando como clave el nombre original que está acá arriba.
   PRODUCTS.forEach(function (p) { p.key = p.name; });
   var BASE = {};
-  PRODUCTS.forEach(function (p) { BASE[p.key] = { name: p.name, cartName: p.cartName, desc: p.desc || '', price: p.price, old: p.old || null, stock: p.stock, img: p.img || '', imgs: p.img ? [p.img] : [], talles: p.talles || [] }; });
+  PRODUCTS.forEach(function (p) { BASE[p.key] = { name: p.name, cartName: p.cartName, desc: p.desc || '', price: p.price, old: p.old || null, stock: p.stock, img: p.img || '', imgs: p.img ? [p.img] : [], talles: p.talles || [], ig: !!p.ig || p.line === 'perfume' }; });
+  // Productos creados desde el panel (clave "nuevo:...")
+  function emptyBase() { return { name: '', desc: '', price: null, old: null, stock: true, img: '', imgs: [], talles: [], ig: false }; }
+  function makeNew(key, o) {
+    var p = { key: key, nuevo: true, name: o.name || '', line: o.line, stock: true, price: null };
+    if (o.line === 'perfume') { p.gen = o.gen || 'Unisex'; p.cartName = 'Perfume ' + p.name; }
+    if (o.line === 'cosmetica') { p.group = o.group || 'Cuidado íntimo'; p.label = o.label || (p.group === 'Velas aromáticas' ? 'VELA AROMÁTICA' : (p.group === 'Lencería' ? 'LENCERÍA' : 'CUIDADO CORPORAL')); p.icon = p.group === 'Velas aromáticas' ? 'candle' : (p.group === 'Lencería' ? 'lace' : 'oil'); }
+    if (o.line === 'adulto') p.cat = o.cat || 'Otros';
+    return p;
+  }
   var OVERRIDES = {};
   // Promociones generales (se cambian desde el panel)
   var SETTINGS = { cuotas: 3, transferencia: 10, envioGratis: 0, promoOn: true, promoText: '', descuentos: { perfumes: 0, cosmetica: 0, lenceria: 0, adulto: 0 } };
@@ -83,6 +92,17 @@
         descuentos: Object.assign({ perfumes: 0, cosmetica: 0, lenceria: 0, adulto: 0 }, st.descuentos || {})
       };
     }
+    // Sumar los productos nuevos guardados y quitar los que se eliminaron
+    for (var i = PRODUCTS.length - 1; i >= 0; i--) {
+      if (PRODUCTS[i].nuevo && !PRODUCTS[i].draftOnly && !OVERRIDES[PRODUCTS[i].key]) PRODUCTS.splice(i, 1);
+    }
+    Object.keys(OVERRIDES).forEach(function (k) {
+      if (k.indexOf('nuevo:') !== 0 || !OVERRIDES[k].nuevo) return;
+      var ex = PRODUCTS.filter(function (q) { return q.key === k; })[0];
+      if (ex) { ex.draftOnly = false; return; }
+      BASE[k] = emptyBase();
+      PRODUCTS.push(makeNew(k, OVERRIDES[k]));
+    });
     PRODUCTS.forEach(function (p) {
       var b = BASE[p.key], o = OVERRIDES[p.key] || {};
       p.name = o.name || b.name;
@@ -102,6 +122,8 @@
       p.imgs = Array.isArray(o.imgs) ? o.imgs.slice(0, 4) : (o.img ? [o.img] : b.imgs.slice());
       p.img = p.imgs[0] || undefined;
       p.talles = Array.isArray(o.talles) ? o.talles.slice(0, 12) : b.talles.slice();
+      p.ig = o.ig !== undefined ? o.ig : b.ig;
+      if (p.nuevo && p.line === 'perfume') p.cartName = 'Perfume ' + p.name;
       if (b.cartName) p.cartName = o.name ? b.cartName.replace(b.name, o.name) : b.cartName;
     });
   }
@@ -109,6 +131,7 @@
   applyOverrides({}, null);
 
   var ICONS = {
+    candle: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 8c-4 6-6 9-6 13a6 6 0 0 0 12 0c0-4-2-7-6-13z" fill="#E7C27A"/><path d="M32 27v8"/><path d="M14 36h36v46c0 3-3 6-6 6H20c-3 0-6-3-6-6z" fill="#F7EDDC"/><path d="M14 50h36"/><path d="M20 62h24" opacity=".5"/></svg>',
     oil: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M27 4h10v8H27z" fill="#A8324D"/><path d="M25 12h14v8H25z"/><path d="M22 20h20c4 0 8 4 8 9v55c0 4-3 8-8 8H22c-5 0-8-4-8-8V29c0-5 4-9 8-9z" fill="#F7EDDC"/><path d="M14 52h36v32c0 4-3 8-8 8H22c-5 0-8-4-8-8z" fill="#E7C27A" opacity=".55"/><path d="M22 40h20M22 46h14"/></svg>',
     lace: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 22c0-5 6-5 6-9s-3-6-6-6-6 2-6 5"/><path d="M32 22L6 44h52z"/><path d="M14 44c0 10 4 18 18 30 14-12 18-20 18-30" fill="#E58AA0" opacity=".45"/><path d="M20 54c4 2 8 2 12 0s8-2 12 0"/></svg>',
     gel: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M24 4h16v12H24z" fill="#A8324D"/><path d="M20 16h24l6 70H14z" fill="#F7EDDC"/><path d="M14 86h36" stroke-width="3"/><path d="M22 40h20M23 48h14"/><path d="M32 60c-4 5-6 8-6 11a6 6 0 0 0 12 0c0-3-2-6-6-11z" fill="#E58AA0" opacity=".7"/></svg>'
@@ -190,7 +213,7 @@
     { id: 'emperatriz', numeral: 'III', name: 'La Emperatriz', title: 'Perfumes Donna', label: 'PERFUMES DE MUJER', filter: function (p) { return p.line === 'perfume' && p.gen === 'Donna'; }, meaning: 'Abundancia, belleza y una presencia que se siente.', dark: true },
     { id: 'emperador', numeral: 'IV', name: 'El Emperador', title: 'Perfumes Homme', label: 'PERFUMES DE HOMBRE', filter: function (p) { return p.line === 'perfume' && p.gen === 'Homme'; }, meaning: 'Firmeza, seguridad y una estela que no pide permiso.', dark: true },
     { id: 'enamorados', numeral: 'VI', name: 'Los Enamorados', title: 'Perfumes Unisex', label: 'PERFUMES UNISEX', filter: function (p) { return p.line === 'perfume' && p.gen === 'Unisex'; }, meaning: 'Elegirse y compartir: fragancias para cualquier piel.', dark: true },
-    { id: 'placer', numeral: 'II', name: 'El Placer', title: 'Cosmética íntima', label: 'COSMÉTICA ÍNTIMA', filter: function (p) { return p.line === 'cosmetica' && p.group !== 'Lencería'; }, meaning: 'Aceites, geles y cremas para tus rituales de cuidado.', dark: false },
+    { id: 'placer', numeral: 'II', name: 'El Placer', title: 'Cosmética íntima', label: 'COSMÉTICA ÍNTIMA', filter: function (p) { return p.line === 'cosmetica' && p.group !== 'Lencería'; }, meaning: 'Aceites, cremas, geles y velas para tus rituales de cuidado.', dark: false },
     { id: 'lujuria', numeral: 'XI', name: 'Lujuria', title: 'Lencería', label: 'LENCERÍA', filter: function (p) { return p.line === 'cosmetica' && p.group === 'Lencería'; }, meaning: 'Vestirte para vos: encaje, transparencias y actitud.', dark: false }
   ];
   var cardById = function (id) { return CARDS.filter(function (c) { return c.id === id; })[0]; };
@@ -254,16 +277,25 @@
 
   // ---------- Página de perfumes (para anuncios) ----------
   var renderPerfumes = null;
-  if (page === 'perfumes' && $('#perf-grid')) {
+  // Página /tienda: solo los productos marcados "Mostrar en página de Instagram" (perfumes y cosmética, nunca +18)
+  var igGroup = function (p) {
+    if (p.line === 'perfume') return 'perfumes';
+    if (p.line === 'cosmetica' && p.group === 'Velas aromáticas') return 'velas';
+    if (p.line === 'cosmetica' && p.group !== 'Lencería') return 'aceites';
+    return null;
+  };
+  if ((page === 'tienda' || page === 'perfumes') && $('#perf-grid')) {
     var perfFilter = 'todos';
     renderPerfumes = function (f) {
       perfFilter = f || perfFilter;
-      $('#perf-grid').innerHTML = PRODUCTS.filter(function (p) { return p.line === 'perfume' && (perfFilter === 'todos' || p.gen === perfFilter); })
-        .map(function (p) { return productCard(p, 'PERFUME ' + String(p.gen).toUpperCase(), true); }).join('');
+      var list = PRODUCTS.filter(function (p) { var g = igGroup(p); return g && p.ig && (perfFilter === 'todos' || g === perfFilter); });
+      $('#perf-grid').innerHTML = list.length ? list.map(function (p) {
+        return productCard(p, p.line === 'perfume' ? 'PERFUME ' + String(p.gen).toUpperCase() : (p.label || 'CUIDADO CORPORAL'), true);
+      }).join('') : '<p class="muted-light">Pronto vas a encontrar productos acá.</p>';
     };
     renderPerfumes('todos');
     setupChips($('#perf-chips'), renderPerfumes);
-    track('ViewContent', { content_category: 'Perfumes' });
+    track('ViewContent', { content_category: 'Tienda' });
   }
 
   // ---------- Línea +18 ----------
@@ -277,7 +309,7 @@
     var adultFilter = 'todos';
     renderAdult = function (f) {
       adultFilter = f || adultFilter;
-      $('#adult-grid').innerHTML = adult.filter(function (p) { return adultFilter === 'todos' || p.cat === adultFilter; })
+      $('#adult-grid').innerHTML = PRODUCTS.filter(function (p) { return p.line === 'adulto' && (adultFilter === 'todos' || p.cat === adultFilter); })
         .map(function (p) { return productCard(p, p.cat.toUpperCase(), false); }).join('');
     };
     renderAdult('todos');
@@ -590,8 +622,8 @@
       '<a href="mas18.html" rel="nofollow">LÍNEA +18</a>' +
       '<a href="#como-comprar">CÓMO COMPRAR</a>' +
       '<a href="#contacto">CONTACTO</a>'
-    : page === 'perfumes'
-    ? '<a href="#perfumes">PERFUMES</a><a href="#como-comprar">CÓMO COMPRAR</a><a href="#contacto">CONTACTO</a>'
+    : (page === 'tienda' || page === 'perfumes')
+    ? '<a href="#tienda">TIENDA</a><a href="#como-comprar">CÓMO COMPRAR</a><a href="#contacto">CONTACTO</a>'
     : '<a href="index.html">← VOLVER A LA TIENDA</a>';
   var menuEl = document.createElement('div');
   menuEl.className = 'overlay menu-overlay'; menuEl.id = 'menu'; menuEl.hidden = true;
@@ -659,6 +691,23 @@
           '<p class="small">Se descuenta del precio de cada producto de esa sección y se muestra el precio original tachado.</p>' +
         '</section>' +
         '<p class="eyebrow admin-products-title">PRODUCTOS</p>' +
+        '<div class="admin-new">' +
+          '<button type="button" class="btn btn-dark admin-new-btn" id="admin-new-btn">+ AGREGAR PRODUCTO</button>' +
+          '<div class="admin-new-form" id="admin-new-form" hidden>' +
+            '<label>SECCIÓN<select id="admin-new-sec">' +
+              '<option value="perfume|Donna">Perfume Donna</option>' +
+              '<option value="perfume|Homme">Perfume Homme</option>' +
+              '<option value="perfume|Unisex">Perfume Unisex</option>' +
+              '<option value="cosmetica|Cuidado íntimo">Aceites y cremas</option>' +
+              '<option value="cosmetica|Velas aromáticas" selected>Velas aromáticas</option>' +
+              '<option value="cosmetica|Lencería">Lencería</option>' +
+              '<option value="adulto|">Línea +18</option>' +
+            '</select></label>' +
+            '<label id="admin-new-cat-wrap" hidden>CATEGORÍA +18<select id="admin-new-cat"></select></label>' +
+            '<label>NOMBRE<input type="text" id="admin-new-name" maxlength="200" placeholder="Ej: Vela aromática Vainilla 200 g"></label>' +
+            '<div class="admin-actions"><button type="button" class="btn btn-outline" id="admin-new-cancel">CANCELAR</button><button type="button" class="btn btn-dark" id="admin-new-ok">CREAR</button></div>' +
+          '</div>' +
+        '</div>' +
         '<div class="chips admin-cats" id="admin-cats">' +
           '<button type="button" class="chip active" data-cat="todos" aria-pressed="true">Todos</button>' +
           '<button type="button" class="chip" data-cat="perfumes" aria-pressed="false">Perfumes</button>' +
@@ -727,12 +776,14 @@
             '<label class="admin-check"><input type="checkbox" data-f="stock"' + (d.stock ? ' checked' : '') + '> HAY STOCK</label>' +
           '</div>' +
           (sectionOf(p) === 'lenceria' ? '<label>TALLES (SEPARADOS POR COMA)<input type="text" data-f="talles" value="' + esc(d.talles.join(', ')) + '" maxlength="120" placeholder="Ej: S, M, L, XL — vacío = sin talles"></label>' : '') +
+          (p.line === 'perfume' || sectionOf(p) === 'cosmetica' ? '<label class="admin-check"><input type="checkbox" data-f="ig"' + (d.ig ? ' checked' : '') + '> MOSTRAR EN PÁGINA DE INSTAGRAM (/tienda)</label>' : '') +
+          (p.nuevo ? '<button type="button" class="admin-delete" data-del-product>ELIMINAR PRODUCTO</button>' : '') +
         '</div></div>';
     }).join('');
   }
   function startEditor() {
     draft = {};
-    PRODUCTS.forEach(function (p) { draft[p.key] = { name: p.name, desc: p.desc || '', price: p.listPrice, old: p.rawOld || null, stock: !!p.stock, imgs: (p.imgs || []).slice(), talles: (p.talles || []).slice() }; });
+    PRODUCTS.forEach(function (p) { draft[p.key] = { name: p.name, desc: p.desc || '', price: p.listPrice, old: p.rawOld || null, stock: !!p.stock, imgs: (p.imgs || []).slice(), talles: (p.talles || []).slice(), ig: !!p.ig }; });
     sdraft = JSON.parse(JSON.stringify(SETTINGS));
     var box = $('#admin-promos');
     $$('[data-s]', box).forEach(function (el) {
@@ -761,8 +812,13 @@
       });
     } else showLogin('');
   }
+  function dropUnsaved() {
+    for (var i = PRODUCTS.length - 1; i >= 0; i--) if (PRODUCTS[i].draftOnly) PRODUCTS.splice(i, 1);
+    refreshPage();
+  }
   function closeAdmin() {
     if (dirty && !window.confirm('Tenés cambios sin guardar. ¿Cerrar igual?')) return;
+    dropUnsaved();
     adminEl.hidden = true; dirty = false; lock();
   }
 
@@ -789,6 +845,41 @@
     if (t.hasAttribute('data-close-admin')) closeAdmin();
   });
   $('#admin-search').addEventListener('input', renderAdminList);
+  // Alta de productos nuevos
+  $('#admin-new-btn').addEventListener('click', function () {
+    var cats = [];
+    PRODUCTS.forEach(function (p) { if (p.line === 'adulto' && cats.indexOf(p.cat) < 0) cats.push(p.cat); });
+    $('#admin-new-cat').innerHTML = cats.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('');
+    $('#admin-new-form').hidden = false; $('#admin-new-btn').hidden = true; $('#admin-new-name').focus();
+  });
+  $('#admin-new-sec').addEventListener('change', function () { $('#admin-new-cat-wrap').hidden = this.value.indexOf('adulto') !== 0; });
+  $('#admin-new-cancel').addEventListener('click', function () { $('#admin-new-form').hidden = true; $('#admin-new-btn').hidden = false; });
+  $('#admin-new-ok').addEventListener('click', function () {
+    var name = $('#admin-new-name').value.trim();
+    if (!name) { $('#admin-new-name').focus(); setStatus('Escribí el nombre del producto nuevo.', true); return; }
+    var sec = $('#admin-new-sec').value.split('|'), o = { name: name, line: sec[0] };
+    if (sec[0] === 'perfume') o.gen = sec[1];
+    if (sec[0] === 'cosmetica') o.group = sec[1];
+    if (sec[0] === 'adulto') o.cat = $('#admin-new-cat').value || 'Otros';
+    var key = 'nuevo:' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    var p = makeNew(key, o); p.draftOnly = true;
+    BASE[key] = emptyBase();
+    PRODUCTS.push(p);
+    draft[key] = { name: name, desc: '', price: null, old: null, stock: true, imgs: [], talles: [], ig: sec[0] === 'perfume' || (sec[0] === 'cosmetica' && sec[1] !== 'Lencería') };
+    $('#admin-new-name').value = ''; $('#admin-new-form').hidden = true; $('#admin-new-btn').hidden = false;
+    adminCat = 'todos'; $('#admin-search').value = name;
+    $$('[data-cat]', $('#admin-cats')).forEach(function (x) { var on = x.getAttribute('data-cat') === 'todos'; x.classList.toggle('active', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    renderAdminList();
+    dirty = true; setStatus('Producto creado. Cargale precio y fotos, y tocá "Guardar cambios".');
+  });
+  $('#admin-list').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-del-product]'); if (!b) return;
+    var i = +b.closest('.admin-row').getAttribute('data-i'), p = PRODUCTS[i];
+    if (!p || !p.nuevo) return;
+    if (!window.confirm('¿Eliminar "' + (draft[p.key].name || 'este producto') + '"? Se borra al guardar.')) return;
+    PRODUCTS.splice(i, 1); delete draft[p.key];
+    renderAdminList(); dirty = true; setStatus('Producto eliminado. Tocá "Guardar cambios" para confirmar.');
+  });
   $('#admin-cats').addEventListener('click', function (e) {
     var b = e.target.closest('[data-cat]'); if (!b) return;
     adminCat = b.getAttribute('data-cat');
@@ -809,6 +900,7 @@
     var f = e.target.getAttribute('data-f'); if (!f) return;
     var row = e.target.closest('.admin-row'); var p = PRODUCTS[+row.getAttribute('data-i')]; var d = draft[p.key];
     if (f === 'stock') d.stock = e.target.checked;
+    else if (f === 'ig') d.ig = e.target.checked;
     else if (f === 'price') { var n = e.target.value.replace(/\D/g, ''); d.price = n ? +n : null; }
     else if (f === 'talles') { d.talles = e.target.value.split(/[,;\/]+/).map(function (x) { return x.trim().slice(0, 12); }).filter(Boolean).slice(0, 12); }
     else if (f === 'old') { var m = e.target.value.replace(/\D/g, ''); d.old = m ? +m : null; }
@@ -878,6 +970,14 @@
       if (d.stock !== !!b.stock) o.stock = d.stock;
       if (JSON.stringify(d.imgs) !== JSON.stringify(b.imgs)) o.imgs = d.imgs.slice(0, 4);
       if (JSON.stringify(d.talles) !== JSON.stringify(b.talles)) o.talles = d.talles.slice(0, 12);
+      if (d.ig !== !!b.ig) o.ig = d.ig;
+      if (p.nuevo) {
+        o = { nuevo: true, line: p.line, name: d.name.trim(), desc: d.desc.trim(), price: d.price, old: d.old || null, stock: d.stock, imgs: d.imgs.slice(0, 4), talles: d.talles.slice(0, 12), ig: d.ig };
+        if (p.gen) o.gen = p.gen;
+        if (p.group) o.group = p.group;
+        if (p.label) o.label = p.label;
+        if (p.cat) o.cat = p.cat;
+      }
       if (Object.keys(o).length) ov[p.key] = o;
     });
     if (bad) { setStatus('Hay un producto sin nombre.', true); return; }
@@ -893,6 +993,7 @@
   $('#admin-logout').addEventListener('click', function () {
     if (dirty && !window.confirm('Tenés cambios sin guardar. ¿Salir igual?')) return;
     adminPw = ''; dirty = false; try { sessionStorage.removeItem(ADMIN_KEY); } catch (e) {}
+    dropUnsaved();
     adminEl.hidden = true; lock();
   });
 
