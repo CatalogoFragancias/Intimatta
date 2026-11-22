@@ -326,3 +326,11 @@ a:hover { color: var(--ink); }
   .brand > * + *, .price-row > * + *, .btn > * + *, .chips > * + * { margin-left: 10px; }
   .nav > * + * { margin-left: 20px; }
 }
+
+/* Celular: menú ☰, marca y carrito en la misma línea */
+@media (max-width: 600px) {
+  .burger { width: 42px; height: 42px; }
+  .header-row > .brand { flex: 1 1 0; min-width: 0; gap: 10px; }
+  .brand-text { overflow: hidden; }
+  .tagline { overflow: hidden; text-overflow: ellipsis; }
+}
