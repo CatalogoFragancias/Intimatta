@@ -15,6 +15,8 @@
     { name: 'Alchimia n°9', cartName: 'Perfume Alchimia n°9', line: 'perfume', gen: 'Donna', price: null, stock: true, img: 'img/perfumes/alchimia.jpg', desc: 'Eau de Parfum · Donna · 60 ml' },
     { name: 'Aura', cartName: 'Perfume Aura', line: 'perfume', gen: 'Unisex', price: null, stock: true, img: 'img/perfumes/aura.jpg', desc: 'Eau de Parfum · Unisex · 60 ml' },
     { name: 'Ambush', cartName: 'Perfume Ambush', line: 'perfume', gen: 'Homme', price: null, stock: true, img: 'img/perfumes/ambush.jpg', desc: 'Eau de Parfum · Homme · 60 ml' },
+    { name: 'Body Splash Femenino 125 cc', label: 'BODY SPLASH', icon: 'oil', ig: true, line: 'perfume', gen: 'Donna', price: 6000, old: 7000, stock: true, desc: 'Fragancia corporal liviana para usar todos los días · 125 cc' },
+    { name: 'Body Splash Masculino 125 cc', label: 'BODY SPLASH', icon: 'oil', ig: true, line: 'perfume', gen: 'Homme', price: 6000, old: 7000, stock: false, desc: 'Fragancia corporal liviana para usar todos los días · 125 cc' },
 
     // Cosmética íntima (portada)
     { name: 'Aceite corporal Hot Inevitable 125 ml', ig: true, line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE CORPORAL', img: 'img/cosmetica/aceite-hot-inevitable.jpg', icon: 'oil', price: 17000, old: 18000, stock: true, desc: 'Aceite corporal con efecto calor para masajes.' },
@@ -22,6 +24,7 @@
     { name: 'Aceite para masajes Uva 60 ml', ig: true, line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE DE MASAJE', img: 'img/cosmetica/aceite-uva-60ml.jpg', icon: 'oil', price: 3500, old: 5000, stock: true, desc: 'Aceite de masaje con aroma a uva.' },
     { name: 'Gel íntimo Warming 120 cc', line: 'cosmetica', group: 'Cuidado íntimo', label: 'GEL ÍNTIMO', img: 'img/cosmetica/gel-warming-120cc.jpg', icon: 'gel', price: 5000, old: 6000, stock: false, desc: 'Gel íntimo a base de agua con efecto calor.' },
     { name: 'Magic Dual — aceite para masajes y gel íntimo', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE 2 EN 1', img: 'img/cosmetica/magic-dual.jpg', icon: 'oil', price: 13000, old: 20000, stock: false, desc: 'Aceite para masajes que también funciona como gel íntimo.' },
+    { name: 'Vela de masajes Wild Berries 30 g', ig: true, line: 'cosmetica', group: 'Velas aromáticas', label: 'VELA DE MASAJES', icon: 'candle', price: 8000, old: 9000, stock: true, desc: 'Vela aromática de frutos rojos: se derrite en un aceite tibio para masajes.' },
 
     // Línea +18 (solo en mas18.html)
     { name: 'Vibrador Punto G - Gluxe - Control Por Aplicación', line: 'adulto', cat: 'Vibradores', price: 85000, old: 118000, stock: true },
@@ -236,7 +239,7 @@
     var shown = list.filter(function (p) { return !group || group === 'Todo' || p.group === group; });
     $('#catalog-count').textContent = shown.length + (shown.length === 1 ? ' PRODUCTO' : ' PRODUCTOS');
     $('#catalog-grid').innerHTML = shown.map(function (p) {
-      return productCard(p, p.label || ('PERFUME ' + String(p.gen).toUpperCase()), c.dark);
+      return productCard(p, p.label ? p.label + (p.line === 'perfume' ? ' ' + String(p.gen).toUpperCase() : '') : ('PERFUME ' + String(p.gen).toUpperCase()), c.dark);
     }).join('');
   }
   var currentCard = null;
@@ -291,7 +294,7 @@
       perfFilter = f || perfFilter;
       var list = PRODUCTS.filter(function (p) { var g = igGroup(p); return g && p.ig && !p.deleted && (perfFilter === 'todos' || g === perfFilter); });
       $('#perf-grid').innerHTML = list.length ? list.map(function (p) {
-        return productCard(p, p.line === 'perfume' ? 'PERFUME ' + String(p.gen).toUpperCase() : (p.label || 'CUIDADO CORPORAL'), true);
+        return productCard(p, p.line === 'perfume' ? (p.label || 'PERFUME') + ' ' + String(p.gen).toUpperCase() : (p.label || 'CUIDADO CORPORAL'), true);
       }).join('') : '<p class="muted-light">Pronto vas a encontrar productos acá.</p>';
     };
     renderPerfumes('todos');
