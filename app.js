@@ -321,6 +321,14 @@
       '\n\nTotal: ' + fmt(total) + (pending ? ' (+ productos a consultar)' : '') +
       '\n\nNombre: ' + d.nombre + '\nDNI: ' + d.dni + '\nTeléfono: ' + d.telefono +
       '\nEntrega: Envío a domicilio\nDirección: ' + d.direccion;
+    // Copia del pedido por mail (no frena la apertura de WhatsApp si falla)
+    try {
+      fetch('/api/order', {
+        method: 'POST', keepalive: true,
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ items: cart, nombre: d.nombre, dni: d.dni, telefono: d.telefono, direccion: d.direccion })
+      }).catch(function () {});
+    } catch (err) {}
     var url = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
     var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     if (isMobile) { window.location.href = url; return; }

@@ -1,0 +1,12 @@
+{
+  "name": "intimatta-mail",
+  "main": "worker.js",
+  "compatibility_date": "2026-11-01",
+  // Sin URL pública: solo lo llama la página por service binding
+  "workers_dev": false,
+  "preview_urls": false,
+  "send_email": [
+    { "name": "SEND_EMAIL", "destination_address": "contacto.intimatta@gmail.com" }
+  ],
+  "observability": { "enabled": true }
+}
