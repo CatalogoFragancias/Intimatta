@@ -60,20 +60,48 @@
   // usando como clave el nombre original que está acá arriba.
   PRODUCTS.forEach(function (p) { p.key = p.name; });
   var BASE = {};
-  PRODUCTS.forEach(function (p) { BASE[p.key] = { name: p.name, cartName: p.cartName, desc: p.desc || '', price: p.price, stock: p.stock, img: p.img || '' }; });
+  PRODUCTS.forEach(function (p) { BASE[p.key] = { name: p.name, cartName: p.cartName, desc: p.desc || '', price: p.price, old: p.old || null, stock: p.stock, img: p.img || '' }; });
   var OVERRIDES = {};
-  function applyOverrides(ov) {
+  // Promociones generales (se cambian desde el panel)
+  var SETTINGS = { cuotas: 3, transferencia: 10, promoOn: true, promoText: '', descuentos: { perfumes: 0, cosmetica: 0, lenceria: 0, adulto: 0 } };
+  function sectionOf(p) {
+    if (p.line === 'perfume') return 'perfumes';
+    if (p.line === 'adulto') return 'adulto';
+    return p.group === 'Lencería' ? 'lenceria' : 'cosmetica';
+  }
+  function applyOverrides(ov, st) {
     OVERRIDES = ov && typeof ov === 'object' ? ov : {};
+    if (st && typeof st === 'object') {
+      SETTINGS = {
+        cuotas: +st.cuotas >= 0 ? +st.cuotas : 3,
+        transferencia: +st.transferencia >= 0 ? +st.transferencia : 10,
+        promoOn: st.promoOn !== false,
+        promoText: st.promoText || '',
+        descuentos: Object.assign({ perfumes: 0, cosmetica: 0, lenceria: 0, adulto: 0 }, st.descuentos || {})
+      };
+    }
     PRODUCTS.forEach(function (p) {
       var b = BASE[p.key], o = OVERRIDES[p.key] || {};
       p.name = o.name || b.name;
       p.desc = o.desc !== undefined ? o.desc : b.desc;
-      p.price = o.price !== undefined ? o.price : b.price;
+      // listPrice / rawOld: lo que se edita en el panel. price / old: lo que se muestra, con el descuento de la sección.
+      p.listPrice = o.price !== undefined ? o.price : b.price;
+      p.rawOld = o.old !== undefined ? o.old : b.old;
+      var pct = +SETTINGS.descuentos[sectionOf(p)] || 0;
+      if (pct > 0 && p.listPrice) {
+        p.price = Math.round(p.listPrice * (1 - pct / 100));
+        p.old = Math.max(p.rawOld || 0, p.listPrice);
+      } else {
+        p.price = p.listPrice;
+        p.old = p.rawOld;
+      }
       p.stock = o.stock !== undefined ? o.stock : b.stock;
       p.img = o.img || b.img || undefined;
       if (b.cartName) p.cartName = o.name ? b.cartName.replace(b.name, o.name) : b.cartName;
     });
   }
+
+  applyOverrides({}, null);
 
   var ICONS = {
     oil: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M27 4h10v8H27z" fill="#A8324D"/><path d="M25 12h14v8H25z"/><path d="M22 20h20c4 0 8 4 8 9v55c0 4-3 8-8 8H22c-5 0-8-4-8-8V29c0-5 4-9 8-9z" fill="#F7EDDC"/><path d="M14 52h36v32c0 4-3 8-8 8H22c-5 0-8-4-8-8z" fill="#E7C27A" opacity=".55"/><path d="M22 40h20M22 46h14"/></svg>',
@@ -102,7 +130,7 @@
         : '<div class="product-img"><span>' + esc(p.name.charAt(0)) + '</span></div>';
     var hasOff = p.price && p.old && p.old > p.price;
     var prices = p.price
-      ? (hasOff ? '<span class="old">' + fmt(p.old) + '</span>' : '') + '<span class="price-row"><span class="price">' + fmt(p.price) + '</span>' + (hasOff ? '<span class="off">' + Math.round((1 - p.price / p.old) * 100) + '% OFF</span>' : '') + '</span><span class="small">3 cuotas sin interés</span>'
+      ? (hasOff ? '<span class="old">' + fmt(p.old) + '</span>' : '') + '<span class="price-row"><span class="price">' + fmt(p.price) + '</span>' + (hasOff ? '<span class="off">' + Math.round((1 - p.price / p.old) * 100) + '% OFF</span>' : '') + '</span>' + (SETTINGS.cuotas > 0 ? '<span class="small">' + SETTINGS.cuotas + ' cuotas sin interés de ' + fmt(p.price / SETTINGS.cuotas) + '</span>' : '')
       : '<span class="price-row"><span class="price">Precio a consultar</span></span><span class="small">Consultanos por WhatsApp</span>';
     var btn = p.stock
       ? '<button type="button" class="add" data-add="' + i + '">AGREGAR</button>'
@@ -239,7 +267,8 @@
         '<div id="cart-full" hidden>' +
           '<div class="cart-lines" id="cart-lines"></div>' +
           '<div class="cart-total"><span>TOTAL</span><strong id="cart-total">$0</strong></div>' +
-          '<p class="small">3 cuotas sin interés o 10% off pagando con transferencia.</p>' +
+          '<p class="small rose" id="cart-transfer" hidden></p>' +
+          '<p class="small" id="cart-paytext"></p>' +
           '<p class="small rose" id="cart-pending" hidden>Los perfumes tienen precio a consultar: te lo confirmamos por WhatsApp.</p>' +
           '<form id="order-form" class="order-form" novalidate>' +
             '<p class="eyebrow">TUS DATOS</p>' +
@@ -280,6 +309,11 @@
     $('#cart-empty').hidden = orderDone || cart.length > 0;
     $('#cart-full').hidden = orderDone || cart.length === 0;
     $('#cart-total').textContent = fmt(total);
+    var tr = +SETTINGS.transferencia || 0;
+    $('#cart-transfer').hidden = !(tr > 0 && total > 0);
+    $('#cart-transfer').textContent = 'Total pagando con transferencia (' + tr + '% off): ' + fmt(total * (1 - tr / 100));
+    $('#cart-paytext').textContent = payText();
+    $('#cart-paytext').hidden = !payText();
     $('#cart-pending').hidden = !cart.some(function (x) { return !x.price; });
     $('#cart-lines').innerHTML = cart.map(function (x) {
       return '<div class="line"><div class="line-top"><span class="line-name">' + esc(x.name) + '</span>' +
@@ -334,6 +368,7 @@
     var msg = 'Hola Intimatta! Quiero hacer este pedido:\n\n' +
       cart.map(function (x) { return '• ' + x.qty + ' x ' + x.name + ' — ' + (x.price ? fmt(x.price * x.qty) : 'precio a consultar'); }).join('\n') +
       '\n\nTotal: ' + fmt(total) + (pending ? ' (+ productos a consultar)' : '') +
+      (SETTINGS.transferencia > 0 && total > 0 ? '\nTotal con transferencia (' + SETTINGS.transferencia + '% off): ' + fmt(total * (1 - SETTINGS.transferencia / 100)) : '') +
       '\n\nNombre: ' + d.nombre + '\nDNI: ' + d.dni + '\nTeléfono: ' + d.telefono + '\nEmail: ' + d.email +
       '\nEntrega: Envío a domicilio\nDirección: ' + d.direccion;
     // Copia del pedido por mail (no frena la apertura de WhatsApp si falla)
@@ -378,6 +413,39 @@
   // Al volver desde WhatsApp (botón atrás en el celular), cerrar el aviso y quedar en la portada
   window.addEventListener('pageshow', function () { if (orderDone) goHome(); });
 
+  // ---------- Textos de cuotas, transferencia y barra de promo ----------
+  function payText() {
+    var parts = [];
+    if (SETTINGS.cuotas > 0) parts.push(SETTINGS.cuotas + ' cuotas sin interés');
+    if (SETTINGS.transferencia > 0) parts.push(SETTINGS.transferencia + '% off pagando con transferencia');
+    var t = parts.join(' o ');
+    return t ? t.charAt(0).toUpperCase() + t.slice(1) + '.' : '';
+  }
+  function autoPromoText() {
+    var parts = [];
+    if (SETTINGS.cuotas > 0) parts.push(SETTINGS.cuotas + ' CUOTAS SIN INTERÉS');
+    if (SETTINGS.transferencia > 0) parts.push(SETTINGS.transferencia + '% OFF CON TRANSFERENCIA');
+    var d = SETTINGS.descuentos, names = { perfumes: 'PERFUMES', cosmetica: 'COSMÉTICA', lenceria: 'LENCERÍA', adulto: 'LÍNEA +18' };
+    Object.keys(names).forEach(function (k) { if (d[k] > 0) parts.push(d[k] + '% OFF EN ' + names[k]); });
+    parts.push('ENVÍO DISCRETO');
+    return parts;
+  }
+  function applySettingsUI() {
+    var bar = $('.promo');
+    if (bar) {
+      bar.hidden = !SETTINGS.promoOn;
+      bar.innerHTML = SETTINGS.promoText ? esc(SETTINGS.promoText)
+        : autoPromoText().map(esc).join(' <span class="pink">✦</span> ');
+    }
+    var h = $('#how-pay-title'), pp = $('#how-pay-text');
+    if (h && pp) {
+      var c = SETTINGS.cuotas, t = SETTINGS.transferencia;
+      h.textContent = c > 0 ? c + ' cuotas sin interés' : (t > 0 ? t + '% off con transferencia' : 'Pagá como quieras');
+      pp.textContent = c > 0 && t > 0 ? 'O ' + t + '% de descuento pagando con transferencia.'
+        : (c > 0 ? 'Con tarjeta de crédito.' : (t > 0 ? 'Pagando con transferencia bancaria.' : 'Coordinamos el pago por WhatsApp.'));
+    }
+  }
+
   // ---------- Cambios del panel: se cargan al abrir la página ----------
   function refreshPage() {
     if (currentCard && $('#catalog') && !$('#catalog').hidden) renderCatalog(currentCard, currentGroup);
@@ -394,7 +462,11 @@
     if (!window.fetch) return;
     fetch('/api/products', { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (ov) { if (ov) { applyOverrides(ov); refreshPage(); } })
+      .then(function (j) {
+        if (!j) return;
+        if (j.products !== undefined) applyOverrides(j.products, j.settings); else applyOverrides(j, null);
+        applySettingsUI(); refreshPage();
+      })
       .catch(function () {});
   }
 
@@ -445,6 +517,7 @@
   var adminPw = '';
   try { adminPw = sessionStorage.getItem(ADMIN_KEY) || ''; } catch (e) {}
   var draft = {};
+  var sdraft = null;
   var dirty = false;
   var adminEl = document.createElement('div');
   adminEl.className = 'overlay admin-overlay'; adminEl.id = 'admin'; adminEl.hidden = true;
@@ -459,6 +532,25 @@
         '<button type="submit" class="btn btn-dark">ENTRAR</button>' +
       '</form>' +
       '<div id="admin-editor" hidden>' +
+        '<section class="admin-promos" id="admin-promos">' +
+          '<p class="eyebrow">PROMOCIONES, CUOTAS Y DESCUENTOS</p>' +
+          '<label class="admin-check"><input type="checkbox" data-s="promoOn"> MOSTRAR BARRA DE PROMOCIÓN ARRIBA DE LA PÁGINA</label>' +
+          '<label>TEXTO DE LA BARRA<input type="text" data-s="promoText" maxlength="160" placeholder=""></label>' +
+          '<p class="small">Si lo dejás vacío, se arma solo con las cuotas y descuentos de abajo.</p>' +
+          '<div class="admin-inline">' +
+            '<label>CUOTAS SIN INTERÉS<input type="text" inputmode="numeric" data-s="cuotas" placeholder="0 = no mostrar"></label>' +
+            '<label>DESCUENTO POR TRANSFERENCIA (%)<input type="text" inputmode="numeric" data-s="transferencia" placeholder="0 = no mostrar"></label>' +
+          '</div>' +
+          '<p class="product-cat">DESCUENTO POR SECCIÓN (%)</p>' +
+          '<div class="admin-inline admin-grid4">' +
+            '<label>PERFUMES<input type="text" inputmode="numeric" data-s="d.perfumes" placeholder="0"></label>' +
+            '<label>COSMÉTICA<input type="text" inputmode="numeric" data-s="d.cosmetica" placeholder="0"></label>' +
+            '<label>LENCERÍA<input type="text" inputmode="numeric" data-s="d.lenceria" placeholder="0"></label>' +
+            '<label>LÍNEA +18<input type="text" inputmode="numeric" data-s="d.adulto" placeholder="0"></label>' +
+          '</div>' +
+          '<p class="small">Se descuenta del precio de cada producto de esa sección y se muestra el precio original tachado.</p>' +
+        '</section>' +
+        '<p class="eyebrow admin-products-title">PRODUCTOS</p>' +
         '<input type="search" id="admin-search" class="admin-search" placeholder="Buscar producto…" aria-label="Buscar producto">' +
         '<div id="admin-list" class="admin-list"></div>' +
         '<div class="admin-bar">' +
@@ -509,6 +601,7 @@
           '<label>DESCRIPCIÓN<textarea data-f="desc" rows="2" maxlength="600">' + esc(d.desc) + '</textarea></label>' +
           '<div class="admin-inline">' +
             '<label>PRECIO ($)<input type="text" inputmode="numeric" data-f="price" value="' + (d.price ? d.price : '') + '" placeholder="A consultar"></label>' +
+            '<label>PRECIO ANTERIOR ($)<input type="text" inputmode="numeric" data-f="old" value="' + (d.old ? d.old : '') + '" placeholder="Sin tachado"></label>' +
             '<label class="admin-check"><input type="checkbox" data-f="stock"' + (d.stock ? ' checked' : '') + '> HAY STOCK</label>' +
           '</div>' +
         '</div></div>';
@@ -516,7 +609,16 @@
   }
   function startEditor() {
     draft = {};
-    PRODUCTS.forEach(function (p) { draft[p.key] = { name: p.name, desc: p.desc || '', price: p.price, stock: !!p.stock, img: p.img || '' }; });
+    PRODUCTS.forEach(function (p) { draft[p.key] = { name: p.name, desc: p.desc || '', price: p.listPrice, old: p.rawOld || null, stock: !!p.stock, img: p.img || '' }; });
+    sdraft = JSON.parse(JSON.stringify(SETTINGS));
+    var box = $('#admin-promos');
+    $$('[data-s]', box).forEach(function (el) {
+      var k = el.getAttribute('data-s');
+      if (k === 'promoOn') el.checked = !!sdraft.promoOn;
+      else if (k === 'promoText') { el.value = sdraft.promoText || ''; el.placeholder = autoPromoText().join(' ✦ '); }
+      else if (k.indexOf('d.') === 0) el.value = sdraft.descuentos[k.slice(2)] || '';
+      else el.value = sdraft[k] || '';
+    });
     dirty = false;
     $('#admin-login').hidden = true; $('#admin-editor').hidden = false;
     $('#admin-search').value = '';
@@ -564,11 +666,22 @@
     if (t.hasAttribute('data-close-admin')) closeAdmin();
   });
   $('#admin-search').addEventListener('input', renderAdminList);
+  $('#admin-promos').addEventListener('input', function (e) {
+    var k = e.target.getAttribute('data-s'); if (!k || !sdraft) return;
+    if (k === 'promoOn') sdraft.promoOn = e.target.checked;
+    else if (k === 'promoText') sdraft.promoText = e.target.value;
+    else {
+      var n = e.target.value.replace(/\D/g, ''); n = n ? Math.min(+n, k === 'cuotas' ? 24 : 90) : 0;
+      if (k.indexOf('d.') === 0) sdraft.descuentos[k.slice(2)] = n; else sdraft[k] = n;
+    }
+    dirty = true; setStatus('Hay cambios sin guardar.');
+  });
   $('#admin-list').addEventListener('input', function (e) {
     var f = e.target.getAttribute('data-f'); if (!f) return;
     var row = e.target.closest('.admin-row'); var p = PRODUCTS[+row.getAttribute('data-i')]; var d = draft[p.key];
     if (f === 'stock') d.stock = e.target.checked;
     else if (f === 'price') { var n = e.target.value.replace(/\D/g, ''); d.price = n ? +n : null; }
+    else if (f === 'old') { var m = e.target.value.replace(/\D/g, ''); d.old = m ? +m : null; }
     else d[f] = e.target.value;
     dirty = true; setStatus('Hay cambios sin guardar.');
   });
@@ -615,14 +728,15 @@
       if (d.name.trim() !== b.name) o.name = d.name.trim();
       if (d.desc.trim() !== (b.desc || '')) o.desc = d.desc.trim();
       if (d.price !== b.price) o.price = d.price;
+      if ((d.old || null) !== (b.old || null)) o.old = d.old || null;
       if (d.stock !== !!b.stock) o.stock = d.stock;
       if (d.img && d.img !== (b.img || '')) o.img = d.img;
       if (Object.keys(o).length) ov[p.key] = o;
     });
     if (bad) { setStatus('Hay un producto sin nombre.', true); return; }
     var btn = $('#admin-save'); btn.disabled = true; btn.textContent = 'GUARDANDO…';
-    api('PUT', '/api/admin/products', JSON.stringify(ov)).then(function () {
-      applyOverrides(ov); refreshPage(); dirty = false;
+    api('PUT', '/api/admin/products', JSON.stringify({ products: ov, settings: sdraft })).then(function (j) {
+      applyOverrides(ov, j.settings || sdraft); applySettingsUI(); refreshPage(); dirty = false;
       setStatus('Guardado ✓ Ya se ve en la página (en otros celulares puede tardar hasta un minuto).');
     }).catch(function (err) {
       if (err.status === 401) { adminPw = ''; try { sessionStorage.removeItem(ADMIN_KEY); } catch (e) {} showLogin('La clave cambió. Ingresala de nuevo.'); }

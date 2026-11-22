@@ -257,6 +257,15 @@ a:hover { color: var(--ink); }
 .admin-inline label:first-child { flex: 1 1 160px; }
 .admin-fields .admin-check { flex-direction: row; align-items: center; gap: 8px; min-height: 42px; cursor: pointer; }
 .admin-check input { width: 20px; height: 20px; accent-color: var(--rose); }
+.admin-promos { display: flex; flex-direction: column; gap: 12px; padding: 18px; border: 1px solid var(--ink); background: #FBF6EC; }
+.admin-promos label { display: flex; flex-direction: column; gap: 5px; font-size: 10px; letter-spacing: .18em; font-weight: 700; }
+.admin-promos .admin-check { flex-direction: row; align-items: center; gap: 8px; min-height: 36px; cursor: pointer; }
+.admin-promos input[type="text"] { -webkit-appearance: none; appearance: none; width: 100%; min-height: 42px; padding: 8px 12px; border: 1px solid var(--ink); border-radius: 0; background: var(--cream-2); font-family: var(--sans); font-size: 16px; color: var(--ink); letter-spacing: normal; font-weight: 400; }
+.admin-promos .small, .admin-promos .product-cat { margin: 0; }
+.admin-promos .admin-inline label { flex: 1 1 180px; }
+.admin-grid4 label { flex: 1 1 110px !important; }
+.admin-products-title { margin-top: 26px; margin-bottom: 10px; }
+.admin-inline label { flex: 1 1 140px; }
 .admin-bar { position: sticky; bottom: 0; margin: 0 -20px; padding: 14px 20px; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--cream); border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
 .admin-bar .small { margin: 0; flex: 1 1 220px; }
 .admin-actions { display: flex; gap: 10px; flex: 0 0 auto; }

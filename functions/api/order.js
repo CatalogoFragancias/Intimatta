@@ -35,12 +35,22 @@ export async function onRequestPost({ request, env }) {
   });
   const lines = rows.map((r) => '• ' + r.qty + ' x ' + r.name + ' — ' + r.sub);
 
+  // Cuotas y descuento por transferencia, según lo configurado en el panel
+  let st = { cuotas: 3, transferencia: 10 };
+  if (env.DB) { try { st = Object.assign(st, JSON.parse((await env.DB.get('settings')) || '{}')); } catch (e) {} }
+  const payParts = [];
+  if (st.cuotas > 0) payParts.push(st.cuotas + ' cuotas sin interés');
+  if (st.transferencia > 0) payParts.push(st.transferencia + '% off pagando con transferencia');
+  const payLine = payParts.length ? payParts.join(' o ').replace(/^./, (c) => c.toUpperCase()) + '.' : '';
+  const transfTxt = st.transferencia > 0 && total > 0 ? 'Total con transferencia (' + st.transferencia + '% off): ' + fmt(total * (1 - st.transferencia / 100)) + (pending ? ' (+ productos a consultar)' : '') : '';
+
   const fecha = new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
   const text =
     'Nuevo pedido desde intimatta.com.ar\n' +
     'Fecha: ' + fecha + '\n\n' +
     lines.join('\n') + '\n\n' +
-    'Total: ' + fmt(total) + (pending ? ' (+ productos a consultar)' : '') + '\n\n' +
+    'Total: ' + fmt(total) + (pending ? ' (+ productos a consultar)' : '') + '\n' +
+    (transfTxt ? transfTxt + '\n' : '') + '\n' +
     'Nombre: ' + nombre + '\n' +
     'DNI: ' + dni + '\n' +
     'Teléfono: ' + telefono + '\n' +
@@ -69,13 +79,14 @@ export async function onRequestPost({ request, env }) {
         '<p style="font-family:Arial,sans-serif;font-size:14px;line-height:1.5;margin:0 0 18px">Recibimos tu pedido. Te escribimos por WhatsApp para coordinar el pago y el envío.</p>' +
         '<table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px">' + htmlRows + '</table>' +
         '<p style="font-family:Arial,sans-serif;font-size:16px;margin:16px 0 4px"><b>Total: ' + h(totalTxt) + '</b></p>' +
-        '<p style="font-family:Arial,sans-serif;font-size:12px;color:#5C4B3B;margin:0 0 18px">3 cuotas sin interés o 10% off pagando con transferencia.</p>' +
+        (transfTxt ? '<p style="font-family:Arial,sans-serif;font-size:14px;margin:0 0 4px">' + h(transfTxt) + '</p>' : '') +
+        '<p style="font-family:Arial,sans-serif;font-size:12px;color:#5C4B3B;margin:0 0 18px">' + h(payLine) + '</p>' +
         '<p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.5;margin:0">Envío a: ' + h(direccion) + '</p>' +
         '<p style="font-family:Arial,sans-serif;font-size:12px;color:#5C4B3B;margin:22px 0 0">¿Dudas? Respondé este mail o escribinos a contacto@intimatta.com.ar.<br>Envío discreto a todo el país.</p>' +
         '</div></div>';
       const txt =
         '¡Hola ' + nombre + '!\n\nRecibimos tu pedido. Te escribimos por WhatsApp para coordinar el pago y el envío.\n\n' +
-        lines.join('\n') + '\n\nTotal: ' + totalTxt + '\n3 cuotas sin interés o 10% off pagando con transferencia.\n\n' +
+        lines.join('\n') + '\n\nTotal: ' + totalTxt + '\n' + (transfTxt ? transfTxt + '\n' : '') + (payLine ? payLine + '\n' : '') + '\n' +
         'Envío a: ' + direccion + '\n\n¿Dudas? Respondé este mail o escribinos a contacto@intimatta.com.ar.\nIntimatta — intimatta.com.ar';
       const rr = await fetch('https://api.resend.com/emails', {
         method: 'POST',
