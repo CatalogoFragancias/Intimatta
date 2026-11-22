@@ -56,6 +56,25 @@
     { name: 'GEL INTIMO BUTT 120 CC', line: 'adulto', cat: 'Geles y estimulantes', price: 5000, old: 6000, stock: false }
   ];
 
+  // Copia original de cada producto. Los cambios del panel (/api/products) se aplican encima,
+  // usando como clave el nombre original que está acá arriba.
+  PRODUCTS.forEach(function (p) { p.key = p.name; });
+  var BASE = {};
+  PRODUCTS.forEach(function (p) { BASE[p.key] = { name: p.name, cartName: p.cartName, desc: p.desc || '', price: p.price, stock: p.stock, img: p.img || '' }; });
+  var OVERRIDES = {};
+  function applyOverrides(ov) {
+    OVERRIDES = ov && typeof ov === 'object' ? ov : {};
+    PRODUCTS.forEach(function (p) {
+      var b = BASE[p.key], o = OVERRIDES[p.key] || {};
+      p.name = o.name || b.name;
+      p.desc = o.desc !== undefined ? o.desc : b.desc;
+      p.price = o.price !== undefined ? o.price : b.price;
+      p.stock = o.stock !== undefined ? o.stock : b.stock;
+      p.img = o.img || b.img || undefined;
+      if (b.cartName) p.cartName = o.name ? b.cartName.replace(b.name, o.name) : b.cartName;
+    });
+  }
+
   var ICONS = {
     oil: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M27 4h10v8H27z" fill="#A8324D"/><path d="M25 12h14v8H25z"/><path d="M22 20h20c4 0 8 4 8 9v55c0 4-3 8-8 8H22c-5 0-8-4-8-8V29c0-5 4-9 8-9z" fill="#F7EDDC"/><path d="M14 52h36v32c0 4-3 8-8 8H22c-5 0-8-4-8-8z" fill="#E7C27A" opacity=".55"/><path d="M22 40h20M22 46h14"/></svg>',
     lace: '<svg class="ph-icon" width="96" height="140" viewBox="0 0 64 96" fill="none" stroke="#161210" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 22c0-5 6-5 6-9s-3-6-6-6-6 2-6 5"/><path d="M32 22L6 44h52z"/><path d="M14 44c0 10 4 18 18 30 14-12 18-20 18-30" fill="#E58AA0" opacity=".45"/><path d="M20 54c4 2 8 2 12 0s8-2 12 0"/></svg>',
@@ -81,8 +100,9 @@
       : p.icon
         ? '<div class="product-img">' + ICONS[p.icon] + '</div>'
         : '<div class="product-img"><span>' + esc(p.name.charAt(0)) + '</span></div>';
+    var hasOff = p.price && p.old && p.old > p.price;
     var prices = p.price
-      ? '<span class="old">' + fmt(p.old) + '</span><span class="price-row"><span class="price">' + fmt(p.price) + '</span><span class="off">' + Math.round((1 - p.price / p.old) * 100) + '% OFF</span></span><span class="small">3 cuotas sin interés</span>'
+      ? (hasOff ? '<span class="old">' + fmt(p.old) + '</span>' : '') + '<span class="price-row"><span class="price">' + fmt(p.price) + '</span>' + (hasOff ? '<span class="off">' + Math.round((1 - p.price / p.old) * 100) + '% OFF</span>' : '') + '</span><span class="small">3 cuotas sin interés</span>'
       : '<span class="price-row"><span class="price">Precio a consultar</span></span><span class="small">Consultanos por WhatsApp</span>';
     var btn = p.stock
       ? '<button type="button" class="add" data-add="' + i + '">AGREGAR</button>'
@@ -114,7 +134,9 @@
   ];
   var cardById = function (id) { return CARDS.filter(function (c) { return c.id === id; })[0]; };
 
+  var currentGroup = null;
   function renderCatalog(c, group) {
+    currentGroup = group;
     var list = PRODUCTS.filter(c.filter);
     var groups = [];
     list.forEach(function (p) { if (p.group && groups.indexOf(p.group) < 0) groups.push(p.group); });
@@ -169,14 +191,17 @@
   }
 
   // ---------- Línea +18 ----------
+  var renderAdult = null;
   if (page === 'adult' && $('#adult-grid')) {
     var adult = PRODUCTS.filter(function (p) { return p.line === 'adulto'; });
     var cats = [];
     adult.forEach(function (p) { if (cats.indexOf(p.cat) < 0) cats.push(p.cat); });
     $('#adult-chips').innerHTML = '<button type="button" class="chip active" data-filter="todos" aria-pressed="true">Todo</button>' +
       cats.map(function (c) { return '<button type="button" class="chip" data-filter="' + esc(c) + '" aria-pressed="false">' + esc(c) + '</button>'; }).join('');
-    var renderAdult = function (f) {
-      $('#adult-grid').innerHTML = adult.filter(function (p) { return f === 'todos' || p.cat === f; })
+    var adultFilter = 'todos';
+    renderAdult = function (f) {
+      adultFilter = f || adultFilter;
+      $('#adult-grid').innerHTML = adult.filter(function (p) { return adultFilter === 'todos' || p.cat === adultFilter; })
         .map(function (p) { return productCard(p, p.cat.toUpperCase(), false); }).join('');
     };
     renderAdult('todos');
@@ -254,7 +279,7 @@
         '<button type="button" class="remove" data-remove data-name="' + esc(x.name) + '">Quitar</button></div></div>';
     }).join('');
   }
-  function lock() { document.body.classList.toggle('locked', !$('#cart').hidden || ($('#catalog') && !$('#catalog').hidden) || (page === 'adult' && !$('#age-gate').hidden)); }
+  function lock() { document.body.classList.toggle('locked', !$('#cart').hidden || ($('#catalog') && !$('#catalog').hidden) || (page === 'adult' && !$('#age-gate').hidden) || ($('#menu') && !$('#menu').hidden) || ($('#admin') && !$('#admin').hidden)); }
   function openCart() { $('#cart').hidden = false; renderCart(); lock(); }
   function closeCart() { $('#cart').hidden = true; renderCart(); lock(); }
 
@@ -277,6 +302,8 @@
   });
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
+    if ($('#admin') && !$('#admin').hidden) { closeAdmin(); return; }
+    if ($('#menu') && !$('#menu').hidden) { closeMenu(); return; }
     if (!$('#cart').hidden) closeCart(); else if ($('#catalog') && !$('#catalog').hidden) closeCatalog();
   });
 
@@ -302,7 +329,265 @@
     if (w) { try { w.opener = null; } catch (err) {} } else { window.location.href = url; }
   });
 
+  // ---------- Cambios del panel: se cargan al abrir la página ----------
+  function refreshPage() {
+    if (currentCard && $('#catalog') && !$('#catalog').hidden) renderCatalog(currentCard, currentGroup);
+    if (renderAdult) renderAdult();
+    var changed = false;
+    cart.forEach(function (x) {
+      var p = PRODUCTS.filter(function (q) { return (q.cartName || q.name) === x.name; })[0];
+      if (p && p.price !== x.price) { x.price = p.price; changed = true; }
+    });
+    if (changed) saveCart();
+    renderCart();
+  }
+  function loadOverrides() {
+    if (!window.fetch) return;
+    fetch('/api/products', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (ov) { if (ov) { applyOverrides(ov); refreshPage(); } })
+      .catch(function () {});
+  }
+
+  // ---------- Menú ☰ ----------
+  var ICON_X = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  var headerRow = $('.header-row');
+  if (headerRow) {
+    var burger = document.createElement('button');
+    burger.type = 'button'; burger.className = 'burger'; burger.id = 'burger';
+    burger.setAttribute('aria-label', 'Abrir menú'); burger.setAttribute('aria-expanded', 'false');
+    burger.innerHTML = '<span></span><span></span><span></span>';
+    headerRow.insertBefore(burger, headerRow.firstChild);
+  }
+  var menuLinks = page === 'home'
+    ? '<a href="#cartas">PERFUMES</a>' +
+      '<button type="button" data-open-card="placer">COSMÉTICA</button>' +
+      '<button type="button" data-open-card="lujuria">LENCERÍA</button>' +
+      '<a href="mas18.html" rel="nofollow">LÍNEA +18</a>' +
+      '<a href="#como-comprar">CÓMO COMPRAR</a>' +
+      '<a href="#contacto">CONTACTO</a>'
+    : '<a href="index.html">← VOLVER A LA TIENDA</a>';
+  var menuEl = document.createElement('div');
+  menuEl.className = 'overlay menu-overlay'; menuEl.id = 'menu'; menuEl.hidden = true;
+  menuEl.innerHTML =
+    '<aside class="menu-panel" aria-label="Menú">' +
+      '<div class="cart-head"><span class="wordmark">Intimatta<sup>✦</sup></span>' +
+        '<button type="button" class="icon-btn" data-close-menu aria-label="Cerrar menú">' + ICON_X + '</button></div>' +
+      '<nav class="menu-links">' + menuLinks + '</nav>' +
+      '<button type="button" class="menu-admin" data-open-admin>' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>' +
+        'ADMINISTRAR PRODUCTOS</button>' +
+    '</aside>' +
+    '<button type="button" class="cart-backdrop" data-close-menu aria-label="Cerrar menú"></button>';
+  document.body.appendChild(menuEl);
+  function openMenu() { menuEl.hidden = false; if ($('#burger')) $('#burger').setAttribute('aria-expanded', 'true'); lock(); }
+  function closeMenu() { menuEl.hidden = true; if ($('#burger')) $('#burger').setAttribute('aria-expanded', 'false'); lock(); }
+  if ($('#burger')) $('#burger').addEventListener('click', openMenu);
+  menuEl.addEventListener('click', function (e) {
+    var t = e.target;
+    while (t && t !== menuEl && !(t.tagName === 'BUTTON' || t.tagName === 'A')) t = t.parentNode;
+    if (!t || t === menuEl) return;
+    if (t.hasAttribute('data-open-admin')) { closeMenu(); openAdmin(); return; }
+    closeMenu(); // los links y botones del menú cierran el menú; el resto lo resuelve el manejador general
+  });
+
+  // ---------- Panel de administración (con clave) ----------
+  var ADMIN_KEY = 'intimatta-admin';
+  var adminPw = '';
+  try { adminPw = sessionStorage.getItem(ADMIN_KEY) || ''; } catch (e) {}
+  var draft = {};
+  var dirty = false;
+  var adminEl = document.createElement('div');
+  adminEl.className = 'overlay admin-overlay'; adminEl.id = 'admin'; adminEl.hidden = true;
+  adminEl.innerHTML =
+    '<div class="admin-panel" role="dialog" aria-label="Administrar productos">' +
+      '<div class="cart-head"><h2>Productos<sup>✦</sup></h2>' +
+        '<button type="button" class="icon-btn" data-close-admin aria-label="Cerrar">' + ICON_X + '</button></div>' +
+      '<form id="admin-login" class="order-form admin-login" novalidate>' +
+        '<p class="muted">Ingresá la clave para editar nombres, descripciones, precios, stock y fotos.</p>' +
+        '<label>CLAVE<input type="password" name="pw" autocomplete="current-password" required></label>' +
+        '<p class="error" id="admin-login-error" role="alert" hidden></p>' +
+        '<button type="submit" class="btn btn-dark">ENTRAR</button>' +
+      '</form>' +
+      '<div id="admin-editor" hidden>' +
+        '<input type="search" id="admin-search" class="admin-search" placeholder="Buscar producto…" aria-label="Buscar producto">' +
+        '<div id="admin-list" class="admin-list"></div>' +
+        '<div class="admin-bar">' +
+          '<p class="small" id="admin-status" role="status"></p>' +
+          '<div class="admin-actions">' +
+            '<button type="button" class="btn btn-outline" id="admin-logout">SALIR</button>' +
+            '<button type="button" class="btn btn-dark" id="admin-save">GUARDAR CAMBIOS</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(adminEl);
+
+  function adminLabel(p) {
+    if (p.line === 'perfume') return 'PERFUME ' + String(p.gen).toUpperCase();
+    if (p.line === 'adulto') return '+18 · ' + String(p.cat).toUpperCase();
+    return String(p.group || 'COSMÉTICA').toUpperCase();
+  }
+  function setStatus(msg, isError) {
+    var el = $('#admin-status'); el.textContent = msg || ''; el.classList.toggle('error', !!isError);
+  }
+  function api(method, url, body, type) {
+    return fetch(url, {
+      method: method,
+      headers: { 'x-admin-password': adminPw, 'content-type': type || 'application/json' },
+      body: body
+    }).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) {
+        if (!r.ok || !j.ok) { var err = new Error(j.error || 'No se pudo conectar. Probá de nuevo.'); err.status = r.status; throw err; }
+        return j;
+      });
+    });
+  }
+  function thumbHtml(d, p) {
+    return d.img ? '<img src="' + esc(d.img) + '" alt="">' : (p.icon ? ICONS[p.icon] : '<span>' + esc(d.name.charAt(0)) + '</span>');
+  }
+  function renderAdminList() {
+    var q = ($('#admin-search').value || '').toLowerCase();
+    $('#admin-list').innerHTML = PRODUCTS.map(function (p, i) {
+      var d = draft[p.key];
+      if (q && (d.name + ' ' + adminLabel(p)).toLowerCase().indexOf(q) < 0) return '';
+      return '<div class="admin-row" data-i="' + i + '">' +
+        '<label class="admin-thumb" title="Cambiar foto">' + thumbHtml(d, p) +
+          '<input type="file" accept="image/*" data-img hidden><span class="admin-thumb-cta">CAMBIAR FOTO</span></label>' +
+        '<div class="admin-fields">' +
+          '<p class="product-cat">' + esc(adminLabel(p)) + '</p>' +
+          '<label>NOMBRE<input type="text" data-f="name" value="' + esc(d.name) + '" maxlength="200"></label>' +
+          '<label>DESCRIPCIÓN<textarea data-f="desc" rows="2" maxlength="600">' + esc(d.desc) + '</textarea></label>' +
+          '<div class="admin-inline">' +
+            '<label>PRECIO ($)<input type="text" inputmode="numeric" data-f="price" value="' + (d.price ? d.price : '') + '" placeholder="A consultar"></label>' +
+            '<label class="admin-check"><input type="checkbox" data-f="stock"' + (d.stock ? ' checked' : '') + '> HAY STOCK</label>' +
+          '</div>' +
+        '</div></div>';
+    }).join('');
+  }
+  function startEditor() {
+    draft = {};
+    PRODUCTS.forEach(function (p) { draft[p.key] = { name: p.name, desc: p.desc || '', price: p.price, stock: !!p.stock, img: p.img || '' }; });
+    dirty = false;
+    $('#admin-login').hidden = true; $('#admin-editor').hidden = false;
+    $('#admin-search').value = '';
+    renderAdminList(); setStatus('');
+  }
+  function showLogin(msg) {
+    $('#admin-editor').hidden = true; $('#admin-login').hidden = false;
+    $('#admin-login-error').hidden = !msg; $('#admin-login-error').textContent = msg || '';
+    setTimeout(function () { try { $('#admin-login').pw.focus(); } catch (e) {} }, 50);
+  }
+  function openAdmin() {
+    adminEl.hidden = false; adminEl.scrollTop = 0; lock();
+    if (adminPw) {
+      api('POST', '/api/admin/login').then(startEditor).catch(function (err) {
+        if (err.status === 401) { adminPw = ''; try { sessionStorage.removeItem(ADMIN_KEY); } catch (e) {} }
+        showLogin(err.status === 401 ? '' : err.message);
+      });
+    } else showLogin('');
+  }
+  function closeAdmin() {
+    if (dirty && !window.confirm('Tenés cambios sin guardar. ¿Cerrar igual?')) return;
+    adminEl.hidden = true; dirty = false; lock();
+  }
+
+  $('#admin-login').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var pw = e.target.pw.value;
+    if (!pw) return;
+    adminPw = pw;
+    var btn = e.target.querySelector('button'); btn.disabled = true; btn.textContent = 'VERIFICANDO…';
+    api('POST', '/api/admin/login').then(function () {
+      try { sessionStorage.setItem(ADMIN_KEY, pw); } catch (err) {}
+      e.target.pw.value = '';
+      startEditor();
+    }).catch(function (err) {
+      adminPw = '';
+      showLogin(err.message);
+    }).then(function () { btn.disabled = false; btn.textContent = 'ENTRAR'; });
+  });
+
+  adminEl.addEventListener('click', function (e) {
+    var t = e.target;
+    while (t && t !== adminEl && t.tagName !== 'BUTTON') t = t.parentNode;
+    if (!t || t === adminEl) return;
+    if (t.hasAttribute('data-close-admin')) closeAdmin();
+  });
+  $('#admin-search').addEventListener('input', renderAdminList);
+  $('#admin-list').addEventListener('input', function (e) {
+    var f = e.target.getAttribute('data-f'); if (!f) return;
+    var row = e.target.closest('.admin-row'); var p = PRODUCTS[+row.getAttribute('data-i')]; var d = draft[p.key];
+    if (f === 'stock') d.stock = e.target.checked;
+    else if (f === 'price') { var n = e.target.value.replace(/\D/g, ''); d.price = n ? +n : null; }
+    else d[f] = e.target.value;
+    dirty = true; setStatus('Hay cambios sin guardar.');
+  });
+  $('#admin-list').addEventListener('change', function (e) {
+    if (!e.target.hasAttribute('data-img') || !e.target.files || !e.target.files[0]) return;
+    var row = e.target.closest('.admin-row'); var p = PRODUCTS[+row.getAttribute('data-i')];
+    var file = e.target.files[0];
+    setStatus('Subiendo foto…');
+    resizeImage(file).then(function (blob) {
+      return api('POST', '/api/admin/image', blob, 'image/jpeg');
+    }).then(function (j) {
+      draft[p.key].img = j.url; dirty = true;
+      row.querySelector('.admin-thumb').firstChild.outerHTML = '<img src="' + esc(j.url) + '" alt="">';
+      setStatus('Foto subida. Tocá "Guardar cambios" para publicarla.');
+    }).catch(function (err) { setStatus(err.message || 'No se pudo subir la foto.', true); });
+  });
+
+  // Achica la foto a 700×875 (como las demás), con fondo blanco, en JPG.
+  function resizeImage(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () {
+        var W = 700, H = 875, c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var g = c.getContext('2d');
+        g.fillStyle = '#fff'; g.fillRect(0, 0, W, H);
+        var s = Math.min(W / img.width, H / img.height);
+        var w = img.width * s, h = img.height * s;
+        g.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { b ? resolve(b) : reject(new Error('No se pudo procesar la foto.')); }, 'image/jpeg', 0.85);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('Ese archivo no es una imagen válida.')); };
+      img.src = url;
+    });
+  }
+
+  $('#admin-save').addEventListener('click', function () {
+    var ov = {}, bad = false;
+    PRODUCTS.forEach(function (p) {
+      var b = BASE[p.key], d = draft[p.key], o = {};
+      if (!d.name.trim()) bad = true;
+      if (d.name.trim() !== b.name) o.name = d.name.trim();
+      if (d.desc.trim() !== (b.desc || '')) o.desc = d.desc.trim();
+      if (d.price !== b.price) o.price = d.price;
+      if (d.stock !== !!b.stock) o.stock = d.stock;
+      if (d.img && d.img !== (b.img || '')) o.img = d.img;
+      if (Object.keys(o).length) ov[p.key] = o;
+    });
+    if (bad) { setStatus('Hay un producto sin nombre.', true); return; }
+    var btn = $('#admin-save'); btn.disabled = true; btn.textContent = 'GUARDANDO…';
+    api('PUT', '/api/admin/products', JSON.stringify(ov)).then(function () {
+      applyOverrides(ov); refreshPage(); dirty = false;
+      setStatus('Guardado ✓ Ya se ve en la página (en otros celulares puede tardar hasta un minuto).');
+    }).catch(function (err) {
+      if (err.status === 401) { adminPw = ''; try { sessionStorage.removeItem(ADMIN_KEY); } catch (e) {} showLogin('La clave cambió. Ingresala de nuevo.'); }
+      else setStatus(err.message, true);
+    }).then(function () { btn.disabled = false; btn.textContent = 'GUARDAR CAMBIOS'; });
+  });
+  $('#admin-logout').addEventListener('click', function () {
+    if (dirty && !window.confirm('Tenés cambios sin guardar. ¿Salir igual?')) return;
+    adminPw = ''; dirty = false; try { sessionStorage.removeItem(ADMIN_KEY); } catch (e) {}
+    adminEl.hidden = true; lock();
+  });
+
   renderCart();
+  loadOverrides();
   // Abrir una carta desde el link (ej: .../#emperatriz)
   var h = (location.hash || '').slice(1);
   if (page === 'home' && cardById(h)) openCard(h);

@@ -228,8 +228,46 @@ a:hover { color: var(--ink); }
 .order-form input { -webkit-appearance: none; appearance: none; width: 100%; min-height: 46px; padding: 0 14px; border: 1px solid var(--ink); border-radius: 0; background: #FBF6EC; font-family: var(--sans); font-size: 16px; color: var(--ink); letter-spacing: normal; font-weight: 400; }
 .error { margin: 0; font-size: 14px; color: var(--rose); font-weight: 700; }
 
+/* Menú ☰ */
+.burger { -webkit-appearance: none; appearance: none; width: 44px; height: 44px; flex: 0 0 auto; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid var(--ink); background: transparent; cursor: pointer; padding: 0; touch-action: manipulation; }
+.burger span { display: block; width: 20px; height: 2px; background: var(--ink); }
+.menu-overlay { z-index: 55; background: rgba(22, 18, 16, .55); display: flex; }
+.menu-panel { flex: 0 1 360px; width: 100%; max-width: 360px; height: 100%; overflow-y: auto; background: var(--cream); padding: 24px 24px 32px; padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 24px; }
+.menu-links { display: flex; flex-direction: column; border-top: 1px solid var(--ink); }
+.menu-links a, .menu-links button { -webkit-appearance: none; appearance: none; display: flex; align-items: center; min-height: 54px; border: none; border-bottom: 1px solid var(--line); background: none; padding: 0; text-align: left; font-family: var(--sans); font-size: 14px; letter-spacing: .18em; font-weight: 700; color: var(--ink); text-decoration: none; cursor: pointer; }
+.menu-admin { -webkit-appearance: none; appearance: none; margin-top: auto; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-family: var(--sans); font-size: 12px; letter-spacing: .16em; font-weight: 700; cursor: pointer; }
+
+/* Panel de administración */
+.admin-overlay { z-index: 60; background: var(--cream); overflow-y: auto; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+.admin-panel { max-width: 860px; margin: 0 auto; padding: 24px 20px 0; display: flex; flex-direction: column; gap: 20px; }
+.admin-login { max-width: 420px; }
+.admin-search { -webkit-appearance: none; appearance: none; width: 100%; min-height: 48px; padding: 0 14px; border: 1px solid var(--ink); border-radius: 0; background: #FBF6EC; font-family: var(--sans); font-size: 16px; color: var(--ink); }
+.admin-list { display: flex; flex-direction: column; margin-top: 16px; border-top: 1px solid var(--ink); }
+.admin-row { display: flex; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.admin-thumb { position: relative; flex: 0 0 110px; width: 110px; height: 138px; background: #E3CFB2; border-radius: 55px 55px 4px 4px; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.admin-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.admin-thumb .ph-icon { width: 54px; height: auto; }
+.admin-thumb > span:not(.admin-thumb-cta) { font-family: var(--serif); font-size: 40px; color: var(--rose); }
+.admin-thumb-cta { position: absolute; left: 0; right: 0; bottom: 0; padding: 6px 0; background: rgba(22, 18, 16, .75); color: var(--cream); font-size: 9px; letter-spacing: .14em; font-weight: 700; text-align: center; }
+.admin-fields { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.admin-fields .product-cat { margin: 0; }
+.admin-fields label { display: flex; flex-direction: column; gap: 5px; font-size: 10px; letter-spacing: .18em; font-weight: 700; }
+.admin-fields input[type="text"], .admin-fields textarea { -webkit-appearance: none; appearance: none; width: 100%; min-height: 42px; padding: 8px 12px; border: 1px solid var(--ink); border-radius: 0; background: #FBF6EC; font-family: var(--sans); font-size: 16px; color: var(--ink); letter-spacing: normal; font-weight: 400; resize: vertical; }
+.admin-inline { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; }
+.admin-inline label:first-child { flex: 1 1 160px; }
+.admin-fields .admin-check { flex-direction: row; align-items: center; gap: 8px; min-height: 42px; cursor: pointer; }
+.admin-check input { width: 20px; height: 20px; accent-color: var(--rose); }
+.admin-bar { position: sticky; bottom: 0; margin: 0 -20px; padding: 14px 20px; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--cream); border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.admin-bar .small { margin: 0; flex: 1 1 220px; }
+.admin-actions { display: flex; gap: 10px; flex: 0 0 auto; }
+.admin-actions .btn { min-height: 48px; padding: 0 20px; }
+
 @media (max-width: 600px) {
   .wrap { padding-left: 16px; padding-right: 16px; }
+  .admin-row { gap: 12px; }
+  .admin-thumb { flex-basis: 84px; width: 84px; height: 105px; }
+  .admin-actions { width: 100%; }
+  .admin-actions .btn { flex: 1 1 auto; padding: 0 12px; }
   .header-row { flex-wrap: wrap; }
   .brand { flex: 1 1 auto; min-width: 0; }
   .brand-text { min-width: 0; }
