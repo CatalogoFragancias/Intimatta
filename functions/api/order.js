@@ -42,6 +42,8 @@ export async function onRequestPost({ request, env }) {
   if (st.cuotas > 0) payParts.push(st.cuotas + ' cuotas sin interés');
   if (st.transferencia > 0) payParts.push(st.transferencia + '% off pagando con transferencia');
   const payLine = payParts.length ? payParts.join(' o ').replace(/^./, (c) => c.toUpperCase()) + '.' : '';
+  const envioG = +st.envioGratis || 0;
+  const envioTxt = envioG > 0 && total >= envioG ? 'Envío: GRATIS (compra desde ' + fmt(envioG) + ')' : 'Envío: a cargo del comprador';
   const transfTxt = st.transferencia > 0 && total > 0 ? 'Total con transferencia (' + st.transferencia + '% off): ' + fmt(total * (1 - st.transferencia / 100)) + (pending ? ' (+ productos a consultar)' : '') : '';
 
   const fecha = new Date().toLocaleString('es-AR', { timeZone: 'America/Argentina/Buenos_Aires' });
@@ -56,6 +58,7 @@ export async function onRequestPost({ request, env }) {
     'Teléfono: ' + telefono + '\n' +
     'Email: ' + (email || emailRaw || '-') + '\n' +
     'Entrega: Envío a domicilio\n' +
+    envioTxt + '\n' +
     'Dirección: ' + direccion + '\n\n' +
     'El cliente fue enviado a WhatsApp con este mismo pedido. Los precios son los que mostraba la página.';
 
@@ -81,13 +84,13 @@ export async function onRequestPost({ request, env }) {
         '<p style="font-family:Arial,sans-serif;font-size:16px;margin:16px 0 4px"><b>Total: ' + h(totalTxt) + '</b></p>' +
         (transfTxt ? '<p style="font-family:Arial,sans-serif;font-size:14px;margin:0 0 4px">' + h(transfTxt) + '</p>' : '') +
         '<p style="font-family:Arial,sans-serif;font-size:12px;color:#5C4B3B;margin:0 0 18px">' + h(payLine) + '</p>' +
-        '<p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.5;margin:0">Envío a: ' + h(direccion) + '</p>' +
+        '<p style="font-family:Arial,sans-serif;font-size:13px;line-height:1.5;margin:0">Envío a: ' + h(direccion) + '<br>' + h(envioTxt) + '</p>' +
         '<p style="font-family:Arial,sans-serif;font-size:12px;color:#5C4B3B;margin:22px 0 0">¿Dudas? Respondé este mail o escribinos a contacto@intimatta.com.ar.<br>Envío discreto a todo el país.</p>' +
         '</div></div>';
       const txt =
         '¡Hola ' + nombre + '!\n\nRecibimos tu pedido. Te escribimos por WhatsApp para coordinar el pago y el envío.\n\n' +
         lines.join('\n') + '\n\nTotal: ' + totalTxt + '\n' + (transfTxt ? transfTxt + '\n' : '') + (payLine ? payLine + '\n' : '') + '\n' +
-        'Envío a: ' + direccion + '\n\n¿Dudas? Respondé este mail o escribinos a contacto@intimatta.com.ar.\nIntimatta — intimatta.com.ar';
+        'Envío a: ' + direccion + '\n' + envioTxt + '\n\n¿Dudas? Respondé este mail o escribinos a contacto@intimatta.com.ar.\nIntimatta — intimatta.com.ar';
       const rr = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: { authorization: 'Bearer ' + env.RESEND_API_KEY, 'content-type': 'application/json' },

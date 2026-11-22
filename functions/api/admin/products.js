@@ -50,6 +50,7 @@ function cleanSettings(v) {
     cuotas: num(v.cuotas, 0, 24, 3),
     transferencia: num(v.transferencia, 0, 60, 10),
     promoOn: v.promoOn !== false,
+    envioGratis: num(v.envioGratis, 0, 100000000, 0),
     promoText: typeof v.promoText === 'string' ? v.promoText.replace(/[\r\n]+/g, ' ').trim().slice(0, 160) : '',
     descuentos: {
       perfumes: num(d.perfumes, 0, 90, 0),

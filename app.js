@@ -63,7 +63,7 @@
   PRODUCTS.forEach(function (p) { BASE[p.key] = { name: p.name, cartName: p.cartName, desc: p.desc || '', price: p.price, old: p.old || null, stock: p.stock, img: p.img || '' }; });
   var OVERRIDES = {};
   // Promociones generales (se cambian desde el panel)
-  var SETTINGS = { cuotas: 3, transferencia: 10, promoOn: true, promoText: '', descuentos: { perfumes: 0, cosmetica: 0, lenceria: 0, adulto: 0 } };
+  var SETTINGS = { cuotas: 3, transferencia: 10, envioGratis: 0, promoOn: true, promoText: '', descuentos: { perfumes: 0, cosmetica: 0, lenceria: 0, adulto: 0 } };
   function sectionOf(p) {
     if (p.line === 'perfume') return 'perfumes';
     if (p.line === 'adulto') return 'adulto';
@@ -75,6 +75,7 @@
       SETTINGS = {
         cuotas: +st.cuotas >= 0 ? +st.cuotas : 3,
         transferencia: +st.transferencia >= 0 ? +st.transferencia : 10,
+        envioGratis: +st.envioGratis > 0 ? +st.envioGratis : 0,
         promoOn: st.promoOn !== false,
         promoText: st.promoText || '',
         descuentos: Object.assign({ perfumes: 0, cosmetica: 0, lenceria: 0, adulto: 0 }, st.descuentos || {})
@@ -268,6 +269,7 @@
           '<div class="cart-lines" id="cart-lines"></div>' +
           '<div class="cart-total"><span>TOTAL</span><strong id="cart-total">$0</strong></div>' +
           '<p class="small rose" id="cart-transfer" hidden></p>' +
+          '<p class="small" id="cart-ship"></p>' +
           '<p class="small" id="cart-paytext"></p>' +
           '<p class="small rose" id="cart-pending" hidden>Los perfumes tienen precio a consultar: te lo confirmamos por WhatsApp.</p>' +
           '<form id="order-form" class="order-form" novalidate>' +
@@ -312,6 +314,10 @@
     var tr = +SETTINGS.transferencia || 0;
     $('#cart-transfer').hidden = !(tr > 0 && total > 0);
     $('#cart-transfer').textContent = 'Total pagando con transferencia (' + tr + '% off): ' + fmt(total * (1 - tr / 100));
+    var eg = +SETTINGS.envioGratis || 0;
+    $('#cart-ship').textContent = eg > 0
+      ? (total >= eg ? '¡Tenés envío gratis!' : 'Envío a cargo del comprador. Te faltan ' + fmt(eg - total) + ' para el envío gratis.')
+      : 'Envío a cargo del comprador.';
     $('#cart-paytext').textContent = payText();
     $('#cart-paytext').hidden = !payText();
     $('#cart-pending').hidden = !cart.some(function (x) { return !x.price; });
@@ -370,7 +376,8 @@
       '\n\nTotal: ' + fmt(total) + (pending ? ' (+ productos a consultar)' : '') +
       (SETTINGS.transferencia > 0 && total > 0 ? '\nTotal con transferencia (' + SETTINGS.transferencia + '% off): ' + fmt(total * (1 - SETTINGS.transferencia / 100)) : '') +
       '\n\nNombre: ' + d.nombre + '\nDNI: ' + d.dni + '\nTeléfono: ' + d.telefono + '\nEmail: ' + d.email +
-      '\nEntrega: Envío a domicilio\nDirección: ' + d.direccion;
+      '\nEntrega: Envío a domicilio\nDirección: ' + d.direccion +
+      '\nEnvío: ' + (SETTINGS.envioGratis > 0 && total >= SETTINGS.envioGratis ? 'GRATIS' : 'a cargo del comprador');
     // Copia del pedido por mail (no frena la apertura de WhatsApp si falla)
     try {
       fetch('/api/order', {
@@ -427,7 +434,7 @@
     if (SETTINGS.transferencia > 0) parts.push(SETTINGS.transferencia + '% OFF CON TRANSFERENCIA');
     var d = SETTINGS.descuentos, names = { perfumes: 'PERFUMES', cosmetica: 'COSMÉTICA', lenceria: 'LENCERÍA', adulto: 'LÍNEA +18' };
     Object.keys(names).forEach(function (k) { if (d[k] > 0) parts.push(d[k] + '% OFF EN ' + names[k]); });
-    parts.push('ENVÍO DISCRETO');
+    parts.push(SETTINGS.envioGratis > 0 ? 'ENVÍO GRATIS DESDE ' + fmt(SETTINGS.envioGratis) : 'ENVÍO DISCRETO');
     return parts;
   }
   function applySettingsUI() {
@@ -446,8 +453,17 @@
       if (SETTINGS.transferencia > 0) items.push('<strong>' + SETTINGS.transferencia + '% off</strong> pagando con transferencia');
       var d = SETTINGS.descuentos, names = { perfumes: 'perfumes', cosmetica: 'cosmética íntima', lenceria: 'lencería', adulto: 'la Línea +18' };
       Object.keys(names).forEach(function (k) { if (d[k] > 0) items.push('<strong>' + d[k] + '% off</strong> en ' + names[k]); });
+      items.push(SETTINGS.envioGratis > 0
+        ? '<strong>Envío gratis</strong> en compras desde ' + fmt(SETTINGS.envioGratis)
+        : 'El envío corre <strong>por cuenta del comprador</strong>');
       items.push('<strong>Envío discreto</strong> a todo el país');
       list.innerHTML = items.map(function (x) { return '<li>' + x + '</li>'; }).join('');
+    }
+    var step = $('#how-ship-text');
+    if (step) {
+      step.textContent = 'Nos contactamos por WhatsApp para coordinar el pago y el envío. ' +
+        (SETTINGS.envioGratis > 0 ? 'El envío es a cargo del comprador, salvo en compras desde ' + fmt(SETTINGS.envioGratis) + ', que es gratis.' : 'El costo de envío es a cargo del comprador.') +
+        ' Paquete neutro, sin logos ni descripción del contenido.';
     }
   }
 
@@ -546,6 +562,8 @@
             '<label>CUOTAS SIN INTERÉS<input type="text" inputmode="numeric" data-s="cuotas" placeholder="0 = no mostrar"></label>' +
             '<label>DESCUENTO POR TRANSFERENCIA (%)<input type="text" inputmode="numeric" data-s="transferencia" placeholder="0 = no mostrar"></label>' +
           '</div>' +
+          '<label>ENVÍO GRATIS EN COMPRAS DESDE ($)<input type="text" inputmode="numeric" data-s="envioGratis" placeholder="0 = el envío siempre lo paga el comprador"></label>' +
+          '<p class="small">Si lo dejás en 0, el envío corre por cuenta del comprador. Si ponés un monto, las compras desde ese total tienen envío gratis.</p>' +
           '<p class="product-cat">DESCUENTO POR SECCIÓN (%)</p>' +
           '<div class="admin-inline admin-grid4">' +
             '<label>PERFUMES<input type="text" inputmode="numeric" data-s="d.perfumes" placeholder="0"></label>' +
@@ -676,7 +694,7 @@
     if (k === 'promoOn') sdraft.promoOn = e.target.checked;
     else if (k === 'promoText') sdraft.promoText = e.target.value;
     else {
-      var n = e.target.value.replace(/\D/g, ''); n = n ? Math.min(+n, k === 'cuotas' ? 24 : 90) : 0;
+      var n = e.target.value.replace(/\D/g, ''); n = n ? Math.min(+n, k === 'cuotas' ? 24 : (k === 'envioGratis' ? 100000000 : 90)) : 0;
       if (k.indexOf('d.') === 0) sdraft.descuentos[k.slice(2)] = n; else sdraft[k] = n;
     }
     dirty = true; setStatus('Hay cambios sin guardar.');
