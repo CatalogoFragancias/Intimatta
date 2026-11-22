@@ -47,6 +47,9 @@ export async function onRequestPost({ request, env }) {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ subject: 'Nuevo pedido de ' + nombre + ' — ' + fmt(total), text })
   });
-  if (!r.ok) return Response.json({ ok: false, error: 'No se pudo enviar el mail' }, { status: 502 });
+  if (!r.ok) {
+    const detail = await r.text().catch(() => '');
+    return Response.json({ ok: false, error: 'No se pudo enviar el mail', detail: detail.slice(0, 300) }, { status: 500 });
+  }
   return Response.json({ ok: true });
 }
