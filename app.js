@@ -123,6 +123,7 @@
       p.img = p.imgs[0] || undefined;
       p.talles = Array.isArray(o.talles) ? o.talles.slice(0, 12) : b.talles.slice();
       p.ig = o.ig !== undefined ? o.ig : b.ig;
+      p.deleted = !p.nuevo && o.borrado === true;
       if (p.nuevo && p.line === 'perfume') p.cartName = 'Perfume ' + p.name;
       if (b.cartName) p.cartName = o.name ? b.cartName.replace(b.name, o.name) : b.cartName;
     });
@@ -221,7 +222,7 @@
   var currentGroup = null;
   function renderCatalog(c, group) {
     currentGroup = group;
-    var list = PRODUCTS.filter(c.filter);
+    var list = PRODUCTS.filter(function (p) { return !p.deleted && c.filter(p); });
     var groups = [];
     list.forEach(function (p) { if (p.group && groups.indexOf(p.group) < 0) groups.push(p.group); });
     var chips = $('#catalog-chips');
@@ -288,7 +289,7 @@
     var perfFilter = 'todos';
     renderPerfumes = function (f) {
       perfFilter = f || perfFilter;
-      var list = PRODUCTS.filter(function (p) { var g = igGroup(p); return g && p.ig && (perfFilter === 'todos' || g === perfFilter); });
+      var list = PRODUCTS.filter(function (p) { var g = igGroup(p); return g && p.ig && !p.deleted && (perfFilter === 'todos' || g === perfFilter); });
       $('#perf-grid').innerHTML = list.length ? list.map(function (p) {
         return productCard(p, p.line === 'perfume' ? 'PERFUME ' + String(p.gen).toUpperCase() : (p.label || 'CUIDADO CORPORAL'), true);
       }).join('') : '<p class="muted-light">Pronto vas a encontrar productos acá.</p>';
@@ -309,7 +310,7 @@
     var adultFilter = 'todos';
     renderAdult = function (f) {
       adultFilter = f || adultFilter;
-      $('#adult-grid').innerHTML = PRODUCTS.filter(function (p) { return p.line === 'adulto' && (adultFilter === 'todos' || p.cat === adultFilter); })
+      $('#adult-grid').innerHTML = PRODUCTS.filter(function (p) { return p.line === 'adulto' && !p.deleted && (adultFilter === 'todos' || p.cat === adultFilter); })
         .map(function (p) { return productCard(p, p.cat.toUpperCase(), false); }).join('');
     };
     renderAdult('todos');
@@ -714,6 +715,7 @@
           '<button type="button" class="chip" data-cat="cosmetica" aria-pressed="false">Cosmética</button>' +
           '<button type="button" class="chip" data-cat="lenceria" aria-pressed="false">Lencería</button>' +
           '<button type="button" class="chip" data-cat="adulto" aria-pressed="false">Línea +18</button>' +
+          '<button type="button" class="chip chip-del" data-cat="eliminados" aria-pressed="false">Eliminados</button>' +
         '</div>' +
         '<input type="search" id="admin-search" class="admin-search" placeholder="Buscar producto…" aria-label="Buscar producto">' +
         '<div id="admin-list" class="admin-list"></div>' +
@@ -762,6 +764,13 @@
     var q = ($('#admin-search').value || '').toLowerCase();
     $('#admin-list').innerHTML = PRODUCTS.map(function (p, i) {
       var d = draft[p.key];
+      if (adminCat === 'eliminados') {
+        if (!d.deleted) return '';
+        return '<div class="admin-row admin-row-deleted" data-i="' + i + '"><div class="admin-fields">' +
+          '<p class="product-cat">' + esc(adminLabel(p)) + '</p><p class="admin-del-name">' + esc(d.name) + '</p>' +
+          '<button type="button" class="btn btn-outline admin-restore" data-restore-product>RESTAURAR</button></div></div>';
+      }
+      if (d.deleted) return '';
       if (adminCat !== 'todos' && sectionOf(p) !== adminCat) return '';
       if (q && (d.name + ' ' + adminLabel(p)).toLowerCase().indexOf(q) < 0) return '';
       return '<div class="admin-row" data-i="' + i + '">' +
@@ -777,13 +786,13 @@
           '</div>' +
           (sectionOf(p) === 'lenceria' ? '<label>TALLES (SEPARADOS POR COMA)<input type="text" data-f="talles" value="' + esc(d.talles.join(', ')) + '" maxlength="120" placeholder="Ej: S, M, L, XL — vacío = sin talles"></label>' : '') +
           (p.line === 'perfume' || sectionOf(p) === 'cosmetica' ? '<label class="admin-check"><input type="checkbox" data-f="ig"' + (d.ig ? ' checked' : '') + '> MOSTRAR EN PÁGINA DE INSTAGRAM (/tienda)</label>' : '') +
-          (p.nuevo ? '<button type="button" class="admin-delete" data-del-product>ELIMINAR PRODUCTO</button>' : '') +
+          '<button type="button" class="admin-delete" data-del-product>ELIMINAR PRODUCTO</button>' +
         '</div></div>';
     }).join('');
   }
   function startEditor() {
     draft = {};
-    PRODUCTS.forEach(function (p) { draft[p.key] = { name: p.name, desc: p.desc || '', price: p.listPrice, old: p.rawOld || null, stock: !!p.stock, imgs: (p.imgs || []).slice(), talles: (p.talles || []).slice(), ig: !!p.ig }; });
+    PRODUCTS.forEach(function (p) { draft[p.key] = { name: p.name, desc: p.desc || '', price: p.listPrice, old: p.rawOld || null, stock: !!p.stock, imgs: (p.imgs || []).slice(), talles: (p.talles || []).slice(), ig: !!p.ig, deleted: !!p.deleted }; });
     sdraft = JSON.parse(JSON.stringify(SETTINGS));
     var box = $('#admin-promos');
     $$('[data-s]', box).forEach(function (el) {
@@ -875,10 +884,18 @@
   $('#admin-list').addEventListener('click', function (e) {
     var b = e.target.closest('[data-del-product]'); if (!b) return;
     var i = +b.closest('.admin-row').getAttribute('data-i'), p = PRODUCTS[i];
-    if (!p || !p.nuevo) return;
-    if (!window.confirm('¿Eliminar "' + (draft[p.key].name || 'este producto') + '"? Se borra al guardar.')) return;
-    PRODUCTS.splice(i, 1); delete draft[p.key];
+    if (!p) return;
+    if (!window.confirm('¿Eliminar "' + (draft[p.key].name || 'este producto') + '"? Se borra al guardar.' + (p.nuevo ? '' : ' Después lo podés recuperar desde "Eliminados".'))) return;
+    if (p.nuevo) { PRODUCTS.splice(i, 1); delete draft[p.key]; }
+    else draft[p.key].deleted = true;
     renderAdminList(); dirty = true; setStatus('Producto eliminado. Tocá "Guardar cambios" para confirmar.');
+  });
+  $('#admin-list').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-restore-product]'); if (!b) return;
+    var p = PRODUCTS[+b.closest('.admin-row').getAttribute('data-i')];
+    if (!p) return;
+    draft[p.key].deleted = false;
+    renderAdminList(); dirty = true; setStatus('Producto restaurado. Tocá "Guardar cambios" para que vuelva a la tienda.');
   });
   $('#admin-cats').addEventListener('click', function (e) {
     var b = e.target.closest('[data-cat]'); if (!b) return;
@@ -971,6 +988,7 @@
       if (JSON.stringify(d.imgs) !== JSON.stringify(b.imgs)) o.imgs = d.imgs.slice(0, 4);
       if (JSON.stringify(d.talles) !== JSON.stringify(b.talles)) o.talles = d.talles.slice(0, 12);
       if (d.ig !== !!b.ig) o.ig = d.ig;
+      if (d.deleted && !p.nuevo) o.borrado = true;
       if (p.nuevo) {
         o = { nuevo: true, line: p.line, name: d.name.trim(), desc: d.desc.trim(), price: d.price, old: d.old || null, stock: d.stock, imgs: d.imgs.slice(0, 4), talles: d.talles.slice(0, 12), ig: d.ig };
         if (p.gen) o.gen = p.gen;

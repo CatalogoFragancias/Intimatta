@@ -314,6 +314,11 @@ a:hover { color: var(--ink); }
 .admin-new-form label { display: flex; flex-direction: column; gap: 5px; font-size: 10px; letter-spacing: .18em; font-weight: 700; }
 .admin-new-form input, .admin-new-form select, .admin-fields select { -webkit-appearance: none; appearance: none; width: 100%; min-height: 42px; padding: 8px 12px; border: 1px solid var(--ink); border-radius: 0; background: var(--cream-2); font-family: var(--sans); font-size: 16px; color: var(--ink); letter-spacing: normal; font-weight: 400; }
 .admin-delete { -webkit-appearance: none; appearance: none; align-self: flex-start; min-height: 38px; padding: 0 16px; border: 1px solid var(--rose); background: transparent; color: var(--rose); font-family: var(--sans); font-size: 11px; letter-spacing: .16em; font-weight: 700; cursor: pointer; }
+.admin-cats .chip-del { border-style: dashed; color: var(--rose); }
+.admin-cats .chip-del.active { background: var(--rose); border-color: var(--rose); color: #fff; }
+.admin-row-deleted { opacity: .85; }
+.admin-del-name { margin: 0; font-family: var(--serif); font-size: 20px; text-decoration: line-through; }
+.admin-restore { align-self: flex-start; min-height: 40px; padding: 0 18px; font-size: 11px; }
 .admin-products-title { margin-top: 26px; margin-bottom: 10px; }
 .admin-inline label { flex: 1 1 140px; }
 .admin-bar { position: sticky; bottom: 0; margin: 0 -20px; padding: 14px 20px; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--cream); border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }

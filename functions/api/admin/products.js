@@ -42,6 +42,8 @@ function clean(input) {
     if (Array.isArray(v.talles)) o.talles = v.talles.map((t) => str(t, 12)).filter(Boolean).slice(0, 12);
     // Mostrar en la página de Instagram (/tienda)
     if (typeof v.ig === 'boolean') o.ig = v.ig;
+    // Producto original borrado desde el panel (se puede restaurar)
+    if (v.borrado === true) o.borrado = true;
     // Productos creados desde el panel: la clave empieza con "nuevo:" y llevan su sección
     if (key.indexOf('nuevo:') === 0 && !/^nuevo:[a-z0-9-]{4,40}$/.test(key)) continue;
     if (/^nuevo:[a-z0-9-]{4,40}$/.test(key)) {
