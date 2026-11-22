@@ -38,6 +38,8 @@ function clean(input) {
     if (img && okImg(img)) o.img = img;
     // Hasta 4 fotos por producto (la primera es la principal)
     if (Array.isArray(v.imgs)) o.imgs = v.imgs.filter(okImg).slice(0, 4);
+    // Talles (lencería): hasta 12, cortos
+    if (Array.isArray(v.talles)) o.talles = v.talles.map((t) => str(t, 12)).filter(Boolean).slice(0, 12);
     if (Object.keys(o).length) out[key] = o;
   }
   return out;

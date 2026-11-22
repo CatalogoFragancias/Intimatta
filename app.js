@@ -60,7 +60,7 @@
   // usando como clave el nombre original que está acá arriba.
   PRODUCTS.forEach(function (p) { p.key = p.name; });
   var BASE = {};
-  PRODUCTS.forEach(function (p) { BASE[p.key] = { name: p.name, cartName: p.cartName, desc: p.desc || '', price: p.price, old: p.old || null, stock: p.stock, img: p.img || '', imgs: p.img ? [p.img] : [] }; });
+  PRODUCTS.forEach(function (p) { BASE[p.key] = { name: p.name, cartName: p.cartName, desc: p.desc || '', price: p.price, old: p.old || null, stock: p.stock, img: p.img || '', imgs: p.img ? [p.img] : [], talles: p.talles || [] }; });
   var OVERRIDES = {};
   // Promociones generales (se cambian desde el panel)
   var SETTINGS = { cuotas: 3, transferencia: 10, envioGratis: 0, promoOn: true, promoText: '', descuentos: { perfumes: 0, cosmetica: 0, lenceria: 0, adulto: 0 } };
@@ -99,6 +99,7 @@
       p.stock = o.stock !== undefined ? o.stock : b.stock;
       p.imgs = Array.isArray(o.imgs) ? o.imgs.slice(0, 4) : (o.img ? [o.img] : b.imgs.slice());
       p.img = p.imgs[0] || undefined;
+      p.talles = Array.isArray(o.talles) ? o.talles.slice(0, 12) : b.talles.slice();
       if (b.cartName) p.cartName = o.name ? b.cartName.replace(b.name, o.name) : b.cartName;
     });
   }
@@ -147,11 +148,16 @@
     var btn = p.stock
       ? '<button type="button" class="add" data-add="' + i + '">AGREGAR</button>'
       : '<button type="button" class="add" disabled>SIN STOCK</button>';
+    var sizes = p.talles && p.talles.length
+      ? '<div class="sizes" role="group" aria-label="Elegí tu talle"><span class="sizes-label">TALLE</span>' +
+          p.talles.map(function (t) { return '<button type="button" class="size" data-size="' + esc(t) + '" aria-pressed="false">' + esc(t) + '</button>'; }).join('') +
+        '</div><p class="size-hint" hidden>Elegí un talle para agregarlo.</p>'
+      : '';
     return '<article class="product' + (dark ? ' product-dark' : '') + '">' + img +
       '<p class="product-cat">' + esc(label) + '</p>' +
       '<h3>' + esc(p.name) + '</h3>' +
       (p.desc ? '<p class="product-desc">' + esc(p.desc) + '</p>' : '') +
-      '<div class="prices">' + prices + '</div>' + btn + '</article>';
+      '<div class="prices">' + prices + '</div>' + (p.stock ? sizes : '') + btn + '</article>';
   }
 
   function setupChips(container, onPick) {
@@ -302,8 +308,8 @@
   var orderDone = false;
   var saveCart = function () { store.set('intimatta-cart', cart); };
 
-  function addToCart(p) {
-    var name = p.cartName || p.name;
+  function addToCart(p, size) {
+    var name = (p.cartName || p.name) + (size ? ' — Talle ' + size : '');
     var line = cart.filter(function (x) { return x.name === name; })[0];
     if (line) line.qty += 1; else cart.push({ name: name, price: p.price, qty: 1 });
     saveCart(); renderCart();
@@ -362,8 +368,21 @@
       tr.scrollTo({ left: next * tr.clientWidth, behavior: 'smooth' });
       return;
     }
+    if (t.hasAttribute('data-size')) {
+      var grp = t.parentNode;
+      $$('.size', grp).forEach(function (b) { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); });
+      t.classList.add('on'); t.setAttribute('aria-pressed', 'true');
+      var hint = grp.parentNode.querySelector('.size-hint'); if (hint) hint.hidden = true;
+      return;
+    }
     if (t.hasAttribute('data-add')) {
-      addToCart(PRODUCTS[+t.getAttribute('data-add')]);
+      var prod = PRODUCTS[+t.getAttribute('data-add')], card = t.closest('.product'), size = null;
+      if (prod.talles && prod.talles.length) {
+        var sel = card && card.querySelector('.size.on');
+        if (!sel) { var h2 = card && card.querySelector('.size-hint'); if (h2) h2.hidden = false; return; }
+        size = sel.getAttribute('data-size');
+      }
+      addToCart(prod, size);
       t.textContent = 'AGREGADO ✓'; t.classList.add('added');
       setTimeout(function () { t.textContent = 'AGREGAR'; t.classList.remove('added'); }, 1200);
       return;
@@ -499,7 +518,8 @@
     if (renderAdult) renderAdult();
     var changed = false;
     cart.forEach(function (x) {
-      var p = PRODUCTS.filter(function (q) { return (q.cartName || q.name) === x.name; })[0];
+      var base = x.name.replace(/ — Talle .+$/, '');
+      var p = PRODUCTS.filter(function (q) { return (q.cartName || q.name) === base; })[0];
       if (p && p.price !== x.price) { x.price = p.price; changed = true; }
     });
     if (changed) saveCart();
@@ -652,6 +672,7 @@
         '<div class="admin-fields">' +
           '<p class="product-cat">' + esc(adminLabel(p)) + '</p>' +
           photosHtml(d) +
+          (sectionOf(p) === 'lenceria' ? '<label>TALLES (SEPARADOS POR COMA)<input type="text" data-f="talles" value="' + esc(d.talles.join(', ')) + '" maxlength="120" placeholder="Ej: S, M, L, XL — vacío = sin talles"></label>' : '') +
           '<label>NOMBRE<input type="text" data-f="name" value="' + esc(d.name) + '" maxlength="200"></label>' +
           '<label>DESCRIPCIÓN<textarea data-f="desc" rows="2" maxlength="600">' + esc(d.desc) + '</textarea></label>' +
           '<div class="admin-inline">' +
@@ -664,7 +685,7 @@
   }
   function startEditor() {
     draft = {};
-    PRODUCTS.forEach(function (p) { draft[p.key] = { name: p.name, desc: p.desc || '', price: p.listPrice, old: p.rawOld || null, stock: !!p.stock, imgs: (p.imgs || []).slice() }; });
+    PRODUCTS.forEach(function (p) { draft[p.key] = { name: p.name, desc: p.desc || '', price: p.listPrice, old: p.rawOld || null, stock: !!p.stock, imgs: (p.imgs || []).slice(), talles: (p.talles || []).slice() }; });
     sdraft = JSON.parse(JSON.stringify(SETTINGS));
     var box = $('#admin-promos');
     $$('[data-s]', box).forEach(function (el) {
@@ -736,6 +757,7 @@
     var row = e.target.closest('.admin-row'); var p = PRODUCTS[+row.getAttribute('data-i')]; var d = draft[p.key];
     if (f === 'stock') d.stock = e.target.checked;
     else if (f === 'price') { var n = e.target.value.replace(/\D/g, ''); d.price = n ? +n : null; }
+    else if (f === 'talles') { d.talles = e.target.value.split(/[,;\/]+/).map(function (x) { return x.trim().slice(0, 12); }).filter(Boolean).slice(0, 12); }
     else if (f === 'old') { var m = e.target.value.replace(/\D/g, ''); d.old = m ? +m : null; }
     else d[f] = e.target.value;
     dirty = true; setStatus('Hay cambios sin guardar.');
@@ -802,6 +824,7 @@
       if ((d.old || null) !== (b.old || null)) o.old = d.old || null;
       if (d.stock !== !!b.stock) o.stock = d.stock;
       if (JSON.stringify(d.imgs) !== JSON.stringify(b.imgs)) o.imgs = d.imgs.slice(0, 4);
+      if (JSON.stringify(d.talles) !== JSON.stringify(b.talles)) o.talles = d.talles.slice(0, 12);
       if (Object.keys(o).length) ov[p.key] = o;
     });
     if (bad) { setStatus('Hay un producto sin nombre.', true); return; }

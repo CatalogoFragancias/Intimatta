@@ -245,9 +245,17 @@ a:hover { color: var(--ink); }
 .gal-prev { left: 8px; }
 .gal-next { right: 8px; }
 .gal-dots { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
-.gal-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, .55); box-shadow: 0 0 0 1px rgba(22, 18, 16, .25); }
-.gal-dots span.on { background: #fff; }
+.gal-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(22, 18, 16, .22); }
+.gal-dots span.on { background: var(--rose); }
 @media (hover: none) { .gal-btn { width: 30px; height: 30px; font-size: 19px; opacity: .85; } }
+
+/* Talles */
+.sizes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 6px; }
+.sizes-label { font-size: 10px; letter-spacing: .2em; font-weight: 700; margin-right: 4px; }
+.size { -webkit-appearance: none; appearance: none; min-width: 40px; min-height: 36px; padding: 0 10px; border: 1px solid currentColor; background: transparent; color: inherit; font-family: var(--sans); font-size: 13px; font-weight: 700; cursor: pointer; touch-action: manipulation; }
+.size.on { background: var(--ink); border-color: var(--ink); color: var(--cream); }
+.product-dark .size.on { background: var(--cream); border-color: var(--cream); color: var(--ink); }
+.size-hint { margin: 2px 0 0; font-size: 13px; font-weight: 700; color: var(--rose); }
 
 /* Fotos en el panel */
 .admin-photos { display: flex; flex-wrap: wrap; gap: 10px; }
