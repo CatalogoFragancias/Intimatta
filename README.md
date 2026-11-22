@@ -1,6 +1,6 @@
 # Intimatta — Perfumería y cosmética íntima
 
-Sitio de Intimatta: perfumes de autor, fragancias con feromonas y cosmética íntima, con pedidos por WhatsApp.
+Sitio de Intimatta: perfumes de autor y cosmética íntima, con pedidos por WhatsApp.
 
 - `index.html` — portada con las cartas: La Emperatriz (perfumes de mujer), El Emperador (de hombre), Los Enamorados (unisex) y El Placer (cosmética íntima) y Lujuria (lencería). Un link de texto chico al final lleva a la Línea +18
 - `mas18.html` — Línea +18, con confirmación de edad (solo se enlaza desde el pie de página y no aparece en buscadores)
