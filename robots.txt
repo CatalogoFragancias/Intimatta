@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /mas18
+Disallow: /api/
+Disallow: /worker-mail/
+Disallow: /functions/
+Disallow: /README.md
+
+Sitemap: https://intimatta.com.ar/sitemap.xml
