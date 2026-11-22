@@ -227,6 +227,9 @@
         '<div id="cart-empty" class="cart-empty"><span class="rose">✦</span><p class="cart-empty-title">Tu carrito está vacío</p>' +
           '<p class="muted">Elegí tu fragancia o un producto de cuidado.</p>' +
           '<button type="button" class="btn btn-dark" data-close-cart>SEGUIR MIRANDO</button></div>' +
+        '<div id="cart-done" class="cart-empty" hidden><span class="rose">✦</span><p class="cart-empty-title">¡Tu pedido fue procesado!</p>' +
+          '<p class="muted">Te respondemos por WhatsApp para coordinar el pago y el envío. Gracias por elegir Intimatta.</p>' +
+          '<button type="button" class="btn btn-dark" data-order-home>VOLVER A LA TIENDA</button></div>' +
         '<div id="cart-full" hidden>' +
           '<div class="cart-lines" id="cart-lines"></div>' +
           '<div class="cart-total"><span>TOTAL</span><strong id="cart-total">$0</strong></div>' +
@@ -237,6 +240,7 @@
             '<label>NOMBRE Y APELLIDO<input type="text" name="nombre" autocomplete="name" required></label>' +
             '<label>DNI<input type="text" name="dni" inputmode="numeric" required></label>' +
             '<label>TELÉFONO<input type="tel" name="telefono" autocomplete="tel" required></label>' +
+            '<label>EMAIL<input type="email" name="email" autocomplete="email" inputmode="email" required></label>' +
             '<label>DIRECCIÓN DE ENVÍO<input type="text" name="direccion" autocomplete="street-address" placeholder="Calle, número, piso, ciudad y código postal" required></label>' +
             '<p class="error" id="form-error" role="alert" hidden>Completá todos los datos para enviar el pedido.</p>' +
             '<button type="submit" class="btn btn-wa"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>ENVIAR PEDIDO POR WHATSAPP</button>' +
@@ -247,6 +251,7 @@
     '</div>';
 
   var cart = store.get('intimatta-cart', []) || [];
+  var orderDone = false;
   var saveCart = function () { store.set('intimatta-cart', cart); };
 
   function addToCart(p) {
@@ -265,8 +270,9 @@
     var total = cart.reduce(function (a, x) { return a + (x.price ? x.price * x.qty : 0); }, 0);
     $$('[data-cart-count]').forEach(function (el) { el.textContent = count; });
     $('#fab').hidden = count === 0 || !$('#cart').hidden;
-    $('#cart-empty').hidden = cart.length > 0;
-    $('#cart-full').hidden = cart.length === 0;
+    $('#cart-done').hidden = !orderDone;
+    $('#cart-empty').hidden = orderDone || cart.length > 0;
+    $('#cart-full').hidden = orderDone || cart.length === 0;
     $('#cart-total').textContent = fmt(total);
     $('#cart-pending').hidden = !cart.some(function (x) { return !x.price; });
     $('#cart-lines').innerHTML = cart.map(function (x) {
@@ -290,7 +296,8 @@
     if (t.hasAttribute('data-open-card')) { openCard(t.getAttribute('data-open-card')); return; }
     if (t.hasAttribute('data-close-catalog')) { closeCatalog(); return; }
     if (t.hasAttribute('data-open-cart')) { openCart(); return; }
-    if (t.hasAttribute('data-close-cart')) { closeCart(); return; }
+    if (t.hasAttribute('data-close-cart')) { if (orderDone) goHome(); else closeCart(); return; }
+    if (t.hasAttribute('data-order-home')) { goHome(); return; }
     if (t.hasAttribute('data-add')) {
       addToCart(PRODUCTS[+t.getAttribute('data-add')]);
       t.textContent = 'AGREGADO ✓'; t.classList.add('added');
@@ -304,14 +311,16 @@
     if (e.key !== 'Escape') return;
     if ($('#admin') && !$('#admin').hidden) { closeAdmin(); return; }
     if ($('#menu') && !$('#menu').hidden) { closeMenu(); return; }
-    if (!$('#cart').hidden) closeCart(); else if ($('#catalog') && !$('#catalog').hidden) closeCatalog();
+    if (!$('#cart').hidden) { if (orderDone) goHome(); else closeCart(); } else if ($('#catalog') && !$('#catalog').hidden) closeCatalog();
   });
 
   $('#order-form').addEventListener('submit', function (e) {
     e.preventDefault();
     var f = e.target;
-    var d = { nombre: f.nombre.value.trim(), dni: f.dni.value.trim(), telefono: f.telefono.value.trim(), direccion: f.direccion.value.trim() };
-    var ok = cart.length > 0 && d.nombre && d.dni && d.telefono && d.direccion;
+    var d = { nombre: f.nombre.value.trim(), dni: f.dni.value.trim(), telefono: f.telefono.value.trim(), email: f.email.value.trim(), direccion: f.direccion.value.trim() };
+    var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email);
+    var ok = cart.length > 0 && d.nombre && d.dni && d.telefono && emailOk && d.direccion;
+    $('#form-error').textContent = d.email && !emailOk ? 'Revisá el email: parece que no está bien escrito.' : 'Completá todos los datos para enviar el pedido.';
     $('#form-error').hidden = !!ok;
     if (!ok) return;
     var total = cart.reduce(function (a, x) { return a + (x.price ? x.price * x.qty : 0); }, 0);
@@ -319,23 +328,49 @@
     var msg = 'Hola Intimatta! Quiero hacer este pedido:\n\n' +
       cart.map(function (x) { return '• ' + x.qty + ' x ' + x.name + ' — ' + (x.price ? fmt(x.price * x.qty) : 'precio a consultar'); }).join('\n') +
       '\n\nTotal: ' + fmt(total) + (pending ? ' (+ productos a consultar)' : '') +
-      '\n\nNombre: ' + d.nombre + '\nDNI: ' + d.dni + '\nTeléfono: ' + d.telefono +
+      '\n\nNombre: ' + d.nombre + '\nDNI: ' + d.dni + '\nTeléfono: ' + d.telefono + '\nEmail: ' + d.email +
       '\nEntrega: Envío a domicilio\nDirección: ' + d.direccion;
     // Copia del pedido por mail (no frena la apertura de WhatsApp si falla)
     try {
       fetch('/api/order', {
         method: 'POST', keepalive: true,
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ items: cart, nombre: d.nombre, dni: d.dni, telefono: d.telefono, direccion: d.direccion })
+        body: JSON.stringify({ items: cart, nombre: d.nombre, dni: d.dni, telefono: d.telefono, email: d.email, direccion: d.direccion })
       }).catch(function () {});
     } catch (err) {}
     var url = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
     var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    if (isMobile) { window.location.href = url; return; }
+    if (isMobile) {
+      finishOrder(f);
+      setTimeout(function () { window.location.href = url; }, 1200);
+      return;
+    }
     var w = null;
     try { w = window.open(url, '_blank'); } catch (err) { w = null; }
-    if (w) { try { w.opener = null; } catch (err) {} } else { window.location.href = url; }
+    if (w) { try { w.opener = null; } catch (err) {} } else { finishOrder(f); window.location.href = url; return; }
+    finishOrder(f);
+    setTimeout(function () { if (orderDone) goHome(); }, 4000);
   });
+
+  // Pedido enviado: se vacía el carrito y se muestra el aviso; después vuelve a la portada.
+  function finishOrder(f) {
+    cart = []; saveCart();
+    try { f.reset(); } catch (err) {}
+    orderDone = true;
+    renderCart();
+    $('.cart-panel').scrollTop = 0;
+  }
+  function goHome() {
+    orderDone = false;
+    $('#cart').hidden = true;
+    if ($('#catalog') && !$('#catalog').hidden) $('#catalog').hidden = true;
+    renderCart(); lock();
+    if (page !== 'home') { window.location.href = 'index.html'; return; }
+    try { history.replaceState(null, '', location.pathname); } catch (err) {}
+    window.scrollTo(0, 0);
+  }
+  // Al volver desde WhatsApp (botón atrás en el celular), cerrar el aviso y quedar en la portada
+  window.addEventListener('pageshow', function () { if (orderDone) goHome(); });
 
   // ---------- Cambios del panel: se cargan al abrir la página ----------
   function refreshPage() {

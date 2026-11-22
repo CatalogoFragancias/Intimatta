@@ -21,9 +21,12 @@ export default {
     try { data = await request.json(); } catch (e) { return new Response('JSON inválido', { status: 400 }); }
     const subject = String(data.subject || 'Nuevo pedido').slice(0, 200);
     const text = String(data.text || '').slice(0, 20000);
+    const rt = String(data.replyTo || '').trim();
+    const replyTo = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(rt) && rt.length <= 120 ? rt : '';
     const raw = [
       'From: Intimatta Pedidos <' + FROM + '>',
       'To: ' + TO,
+      ...(replyTo ? ['Reply-To: ' + replyTo] : []),
       'Subject: =?UTF-8?B?' + b64(subject) + '?=',
       'Message-ID: <' + crypto.randomUUID() + '@intimatta.com.ar>',
       'Date: ' + new Date().toUTCString(),

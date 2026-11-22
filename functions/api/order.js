@@ -19,6 +19,8 @@ export async function onRequestPost({ request, env }) {
   try { d = await request.json(); } catch (e) { return Response.json({ ok: false }, { status: 400 }); }
   const items = Array.isArray(d.items) ? d.items.slice(0, 60) : [];
   const nombre = s(d.nombre, 120), dni = s(d.dni, 30), telefono = s(d.telefono, 40), direccion = s(d.direccion, 300);
+  const emailRaw = s(d.email, 120);
+  const email = /^[^\s@<>"]+@[^\s@<>"]+\.[^\s@<>"]+$/.test(emailRaw) ? emailRaw : '';
   if (!items.length || !nombre || !telefono) return Response.json({ ok: false }, { status: 400 });
 
   let total = 0, pending = false;
@@ -38,6 +40,7 @@ export async function onRequestPost({ request, env }) {
     'Nombre: ' + nombre + '\n' +
     'DNI: ' + dni + '\n' +
     'Teléfono: ' + telefono + '\n' +
+    'Email: ' + (email || emailRaw || '-') + '\n' +
     'Entrega: Envío a domicilio\n' +
     'Dirección: ' + direccion + '\n\n' +
     'El cliente fue enviado a WhatsApp con este mismo pedido. Los precios son los que mostraba la página.';
@@ -45,7 +48,7 @@ export async function onRequestPost({ request, env }) {
   const r = await env.MAILER.fetch('https://intimatta-mail/send', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ subject: 'Nuevo pedido de ' + nombre + ' — ' + fmt(total), text })
+    body: JSON.stringify({ subject: 'Nuevo pedido de ' + nombre + ' — ' + fmt(total), text, replyTo: email })
   });
   if (!r.ok) {
     const detail = await r.text().catch(() => '');
