@@ -236,6 +236,32 @@ a:hover { color: var(--ink); }
 .order-form input { -webkit-appearance: none; appearance: none; width: 100%; min-height: 46px; padding: 0 14px; border: 1px solid var(--ink); border-radius: 0; background: #FBF6EC; font-family: var(--sans); font-size: 16px; color: var(--ink); letter-spacing: normal; font-weight: 400; }
 .error { margin: 0; font-size: 14px; color: var(--rose); font-weight: 700; }
 
+/* Galería de fotos del producto */
+.product-img.gallery { position: relative; }
+.gal-track { display: flex; width: 100%; height: 100%; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; overscroll-behavior-x: contain; }
+.gal-track::-webkit-scrollbar { display: none; }
+.gal-track img { flex: 0 0 100%; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; scroll-snap-align: center; }
+.gal-btn { -webkit-appearance: none; appearance: none; position: absolute; top: 50%; transform: translateY(-50%); width: 34px; height: 34px; border: none; border-radius: 50%; background: rgba(22, 18, 16, .55); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0 0 3px; touch-action: manipulation; }
+.gal-prev { left: 8px; }
+.gal-next { right: 8px; }
+.gal-dots { position: absolute; left: 0; right: 0; bottom: 10px; display: flex; justify-content: center; gap: 6px; pointer-events: none; }
+.gal-dots span { width: 7px; height: 7px; border-radius: 50%; background: rgba(255, 255, 255, .55); box-shadow: 0 0 0 1px rgba(22, 18, 16, .25); }
+.gal-dots span.on { background: #fff; }
+@media (hover: none) { .gal-btn { width: 30px; height: 30px; font-size: 19px; opacity: .85; } }
+
+/* Fotos en el panel */
+.admin-photos { display: flex; flex-wrap: wrap; gap: 10px; }
+.admin-ph { position: relative; width: 84px; height: 105px; border-radius: 42px 42px 4px 4px; overflow: hidden; background: #E3CFB2; flex: 0 0 auto; }
+.admin-ph img { width: 100%; height: 100%; object-fit: cover; }
+.admin-ph-main { position: absolute; left: 0; right: 0; bottom: 0; padding: 4px 0; background: rgba(22, 18, 16, .75); color: var(--cream); font-size: 8px; letter-spacing: .14em; font-weight: 700; text-align: center; }
+.admin-ph-btn { -webkit-appearance: none; appearance: none; position: absolute; bottom: 4px; width: 28px; height: 28px; border: none; border-radius: 50%; background: rgba(22, 18, 16, .75); color: #fff; font-size: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
+.admin-ph-left { left: 4px; }
+.admin-ph-del { right: 4px; }
+.admin-ph-main + .admin-ph-del { bottom: auto; top: 6px; }
+.admin-ph-add { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: 1px dashed var(--ink); background: transparent; cursor: pointer; }
+.admin-ph-add span { font-family: var(--serif); font-size: 34px; line-height: 1; color: var(--rose); }
+.admin-ph-add small { font-size: 8px; letter-spacing: .12em; font-weight: 700; text-align: center; }
+
 /* Menú ☰ */
 .burger { -webkit-appearance: none; appearance: none; width: 44px; height: 44px; flex: 0 0 auto; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid var(--ink); background: transparent; cursor: pointer; padding: 0; touch-action: manipulation; }
 .burger span { display: block; width: 20px; height: 2px; background: var(--ink); }

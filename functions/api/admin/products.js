@@ -34,7 +34,10 @@ function clean(input) {
     else if (typeof v.old === 'number' && isFinite(v.old) && v.old >= 0 && v.old < 1e9) o.old = Math.round(v.old);
     if (typeof v.stock === 'boolean') o.stock = v.stock;
     const img = str(v.img, 300);
-    if (img && (/^\/api\/img\/[A-Za-z0-9-]+$/.test(img) || /^img\/[A-Za-z0-9/_.-]+$/.test(img))) o.img = img;
+    const okImg = (u) => typeof u === 'string' && u.length <= 300 && (/^\/api\/img\/[A-Za-z0-9-]+$/.test(u) || /^img\/[A-Za-z0-9/_.-]+$/.test(u));
+    if (img && okImg(img)) o.img = img;
+    // Hasta 4 fotos por producto (la primera es la principal)
+    if (Array.isArray(v.imgs)) o.imgs = v.imgs.filter(okImg).slice(0, 4);
     if (Object.keys(o).length) out[key] = o;
   }
   return out;
