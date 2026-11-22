@@ -681,7 +681,6 @@
         '<div class="admin-fields">' +
           '<p class="product-cat">' + esc(adminLabel(p)) + '</p>' +
           photosHtml(d) +
-          (sectionOf(p) === 'lenceria' ? '<label>TALLES (SEPARADOS POR COMA)<input type="text" data-f="talles" value="' + esc(d.talles.join(', ')) + '" maxlength="120" placeholder="Ej: S, M, L, XL — vacío = sin talles"></label>' : '') +
           '<label>NOMBRE<input type="text" data-f="name" value="' + esc(d.name) + '" maxlength="200"></label>' +
           '<label>DESCRIPCIÓN<textarea data-f="desc" rows="2" maxlength="600">' + esc(d.desc) + '</textarea></label>' +
           '<div class="admin-inline">' +
@@ -689,6 +688,7 @@
             '<label>PRECIO ANTERIOR ($)<input type="text" inputmode="numeric" data-f="old" value="' + (d.old ? d.old : '') + '" placeholder="Sin tachado"></label>' +
             '<label class="admin-check"><input type="checkbox" data-f="stock"' + (d.stock ? ' checked' : '') + '> HAY STOCK</label>' +
           '</div>' +
+          (sectionOf(p) === 'lenceria' ? '<label>TALLES (SEPARADOS POR COMA)<input type="text" data-f="talles" value="' + esc(d.talles.join(', ')) + '" maxlength="120" placeholder="Ej: S, M, L, XL — vacío = sin talles"></label>' : '') +
         '</div></div>';
     }).join('');
   }
