@@ -208,8 +208,14 @@
     setupChips($('#adult-chips'), renderAdult);
 
     var showAdult = function () { $('#age-gate').hidden = true; $('#adult-content').hidden = false; document.body.classList.remove('locked'); };
-    if (store.get('intimatta-18', false)) showAdult(); else document.body.classList.add('locked');
-    $('#age-yes').addEventListener('click', function () { store.set('intimatta-18', true); showAdult(); });
+    // Se pregunta siempre, cada vez que se entra a la Línea +18 (no se recuerda la respuesta)
+    try { localStorage.removeItem('intimatta-18'); } catch (e) {}
+    document.body.classList.add('locked');
+    $('#age-yes').addEventListener('click', showAdult);
+    // Si vuelven con el botón atrás, volver a preguntar
+    window.addEventListener('pageshow', function (ev) {
+      if (ev.persisted) { $('#age-gate').hidden = false; $('#adult-content').hidden = true; document.body.classList.add('locked'); }
+    });
   }
 
   // ---------- Carrito (se arma igual en las dos páginas) ----------
