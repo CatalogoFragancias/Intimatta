@@ -3,6 +3,8 @@
   'use strict';
 
   var WHATSAPP = '542212014530';
+  // Píxel de Meta (Facebook/Instagram Ads). Pegá acá el número del píxel para activarlo. Nunca se carga en la Línea +18.
+  var META_PIXEL_ID = '';
 
   // price/old en pesos. price: null = precio a consultar.
   // line: 'perfume' | 'cosmetica' (se ven en la portada) | 'adulto' (solo en mas18.html)
@@ -123,6 +125,19 @@
     set: function (k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
   };
 
+  // ---------- Píxel de Meta ----------
+  var track = function () {};
+  if (META_PIXEL_ID && page !== 'adult') {
+    /* eslint-disable */
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    /* eslint-enable */
+    window.fbq('init', META_PIXEL_ID);
+    window.fbq('track', 'PageView');
+    track = function (ev, data) { try { window.fbq('track', ev, data || {}); } catch (e) {} };
+  }
+  // No se informa a Meta nada de la Línea +18
+  var trackable = function (p) { return p && p.line !== 'adulto'; };
+
   // ---------- Tarjeta de producto ----------
   function productCard(p, label, dark) {
     var i = PRODUCTS.indexOf(p);
@@ -211,6 +226,7 @@
     $('#catalog-name').textContent = c.title;
     $('#catalog-meaning').textContent = c.meaning;
     renderCatalog(c, null);
+    track('ViewContent', { content_category: c.title });
     var ov = $('#catalog'); ov.hidden = false; ov.scrollTop = 0; lock();
     try { history.replaceState(null, '', '#' + c.id); } catch (e) {}
   }
@@ -234,6 +250,20 @@
       var t = e.target; while (t && t.tagName !== 'BUTTON') t = t.parentNode;
       if (t && currentCard) renderCatalog(currentCard, t.getAttribute('data-group'));
     });
+  }
+
+  // ---------- Página de perfumes (para anuncios) ----------
+  var renderPerfumes = null;
+  if (page === 'perfumes' && $('#perf-grid')) {
+    var perfFilter = 'todos';
+    renderPerfumes = function (f) {
+      perfFilter = f || perfFilter;
+      $('#perf-grid').innerHTML = PRODUCTS.filter(function (p) { return p.line === 'perfume' && (perfFilter === 'todos' || p.gen === perfFilter); })
+        .map(function (p) { return productCard(p, 'PERFUME ' + String(p.gen).toUpperCase(), true); }).join('');
+    };
+    renderPerfumes('todos');
+    setupChips($('#perf-chips'), renderPerfumes);
+    track('ViewContent', { content_category: 'Perfumes' });
   }
 
   // ---------- Línea +18 ----------
@@ -310,6 +340,7 @@
 
   function addToCart(p, size) {
     var name = (p.cartName || p.name) + (size ? ' — Talle ' + size : '');
+    if (trackable(p)) track('AddToCart', { content_name: p.name, value: p.price || 0, currency: 'ARS' });
     var line = cart.filter(function (x) { return x.name === name; })[0];
     if (line) line.qty += 1; else cart.push({ name: name, price: p.price, qty: 1 });
     saveCart(); renderCart();
@@ -349,7 +380,10 @@
     }).join('');
   }
   function lock() { document.body.classList.toggle('locked', !$('#cart').hidden || ($('#catalog') && !$('#catalog').hidden) || (page === 'adult' && !$('#age-gate').hidden) || ($('#menu') && !$('#menu').hidden) || ($('#admin') && !$('#admin').hidden)); }
-  function openCart() { $('#cart').hidden = false; renderCart(); lock(); }
+  function openCart() {
+    $('#cart').hidden = false; renderCart(); lock();
+    if (cart.length && page !== 'adult') track('InitiateCheckout', { num_items: cart.reduce(function (a, x) { return a + x.qty; }, 0) });
+  }
   function closeCart() { $('#cart').hidden = true; renderCart(); lock(); }
 
   document.addEventListener('click', function (e) {
@@ -423,6 +457,7 @@
       '\n\nNombre: ' + d.nombre + '\nDNI: ' + d.dni + '\nTeléfono: ' + d.telefono + '\nEmail: ' + d.email +
       '\nEntrega: Envío a domicilio\nDirección: ' + d.direccion +
       '\nEnvío: ' + (SETTINGS.envioGratis > 0 && total >= SETTINGS.envioGratis ? 'GRATIS' : 'a cargo del comprador');
+    if (page !== 'adult') track('Lead', { value: total, currency: 'ARS', num_items: cart.reduce(function (a, x) { return a + x.qty; }, 0) });
     // Copia del pedido por mail (no frena la apertura de WhatsApp si falla)
     try {
       fetch('/api/order', {
@@ -458,7 +493,7 @@
     $('#cart').hidden = true;
     if ($('#catalog') && !$('#catalog').hidden) $('#catalog').hidden = true;
     renderCart(); lock();
-    if (page !== 'home') { window.location.href = 'index.html'; return; }
+    if (page === 'adult') { window.location.href = 'index.html'; return; }
     try { history.replaceState(null, '', location.pathname); } catch (err) {}
     window.scrollTo(0, 0);
   }
@@ -516,6 +551,7 @@
   function refreshPage() {
     if (currentCard && $('#catalog') && !$('#catalog').hidden) renderCatalog(currentCard, currentGroup);
     if (renderAdult) renderAdult();
+    if (renderPerfumes) renderPerfumes();
     var changed = false;
     cart.forEach(function (x) {
       var base = x.name.replace(/ — Talle .+$/, '');
@@ -554,6 +590,8 @@
       '<a href="mas18.html" rel="nofollow">LÍNEA +18</a>' +
       '<a href="#como-comprar">CÓMO COMPRAR</a>' +
       '<a href="#contacto">CONTACTO</a>'
+    : page === 'perfumes'
+    ? '<a href="#perfumes">PERFUMES</a><a href="#como-comprar">CÓMO COMPRAR</a><a href="#contacto">CONTACTO</a>'
     : '<a href="index.html">← VOLVER A LA TIENDA</a>';
   var menuEl = document.createElement('div');
   menuEl.className = 'overlay menu-overlay'; menuEl.id = 'menu'; menuEl.hidden = true;

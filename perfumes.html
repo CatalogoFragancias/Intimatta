@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#161210">
+<meta name="format-detection" content="telephone=no">
+<title>Perfumes de autor y con feromonas | Intimatta</title>
+<meta name="description" content="Perfumes de autor y fragancias con feromonas: Donna, Homme y Unisex. Comprá online con cuotas sin interés y envío discreto a todo el país.">
+<link rel="canonical" href="https://intimatta.com.ar/perfumes">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Intimatta">
+<meta property="og:locale" content="es_AR">
+<meta property="og:url" content="https://intimatta.com.ar/perfumes">
+<meta property="og:title" content="Perfumes de autor | Intimatta">
+<meta property="og:description" content="Fragancias de autor y con feromonas. Tu piel. Tu aroma. Tus reglas.">
+<meta property="og:image" content="https://intimatta.com.ar/img/perfumes/sovrana.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/logo.jpg">
+<link rel="apple-touch-icon" href="img/logo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,600;0,6..96,700;1,6..96,500;1,6..96,600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=15">
+</head>
+<body data-page="perfumes">
+
+<div class="promo">3 CUOTAS SIN INTERÉS <span class="pink">✦</span> 10% OFF CON TRANSFERENCIA <span class="pink">✦</span> ENVÍO DISCRETO</div>
+
+<header class="header">
+  <div class="wrap header-row">
+    <a href="#inicio" class="brand">
+      <img src="img/logo.jpg" width="700" height="846" alt="Logo de Intimatta" class="brand-logo">
+      <span class="brand-text">
+        <span class="wordmark">Intimatta<sup>✦</sup></span>
+        <span class="tagline">PERFUMERÍA DE AUTOR</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="#perfumes">PERFUMES</a>
+      <a href="#como-comprar">CÓMO COMPRAR</a>
+      <a href="#contacto">CONTACTO</a>
+    </nav>
+    <button type="button" class="cart-btn" data-open-cart aria-label="Ver carrito">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l-1 13H7L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/></svg>
+      <span><span class="cart-label">CARRITO </span>(<span data-cart-count>0</span>)</span>
+    </button>
+  </div>
+</header>
+
+<main id="inicio">
+  <section class="perfumes" id="perfumes">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow pink">✦ PERFUMERÍA DE AUTOR ✦</p>
+        <h2>Tu piel. Tu aroma.<sup>✦</sup></h2>
+        <p class="muted-light">Fragancias de autor y con feromonas para cada estilo. Elegí la tuya, agregala al carrito y te la enviamos a todo el país.</p>
+      </div>
+      <div class="chips" aria-label="Filtrar perfumes" id="perf-chips">
+        <button type="button" class="chip active" data-filter="todos" aria-pressed="true">Todos</button>
+        <button type="button" class="chip" data-filter="Donna" aria-pressed="false">Donna</button>
+        <button type="button" class="chip" data-filter="Homme" aria-pressed="false">Homme</button>
+        <button type="button" class="chip" data-filter="Unisex" aria-pressed="false">Unisex</button>
+      </div>
+      <div class="products-grid" id="perf-grid"></div>
+    </div>
+  </section>
+
+  <section id="como-comprar" class="how">
+    <div class="wrap">
+      <div class="how-head">
+        <p class="eyebrow">✦ CÓMO COMPRAR ✦</p>
+        <h2 class="how-title">Tu pedido en 4 pasos</h2>
+      </div>
+      <div class="how-grid">
+        <div><span class="roman">I</span><h3>Elegí tus productos</h3><p>Entrá a cada carta, mirá los productos y tocá «Agregar» para sumarlos al carrito.</p></div>
+        <div><span class="roman">II</span><h3>Enviá tu pedido</h3><p>Abrí el carrito, completá tus datos y tocá «Enviar pedido por WhatsApp». Se abre WhatsApp con tu pedido listo para mandar.</p></div>
+        <div><span class="roman">III</span><h3>Te llega la confirmación</h3><p>Recibís un mail de confirmación con el detalle de tu pedido en la dirección que cargaste.</p></div>
+        <div><span class="roman">IV</span><h3>Coordinamos con vos</h3><p id="how-ship-text">Nos contactamos por WhatsApp para coordinar el pago y el envío. El costo de envío es a cargo del comprador. Paquete neutro, sin logos ni descripción del contenido.</p></div>
+      </div>
+      <div class="how-promos" id="how-promos">
+        <p class="eyebrow">✦ PROMOCIONES VIGENTES ✦</p>
+        <ul id="how-promos-list">
+          <li><strong>3 cuotas sin interés</strong></li>
+          <li><strong>10% off</strong> pagando con transferencia</li>
+          <li>El envío corre <strong>por cuenta del comprador</strong></li>
+          <li><strong>Envío discreto</strong> a todo el país</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="contacto" class="footer">
+  <div class="wrap footer-row">
+    <div class="brand">
+      <img src="img/logo.jpg" width="700" height="846" alt="" class="brand-logo brand-logo-lg">
+      <span class="brand-text">
+        <span class="wordmark">Intimatta<sup>✦</sup></span>
+        <span class="tagline light">TU PIEL. TU AROMA. TUS REGLAS.</span>
+      </span>
+    </div>
+    <div class="footer-links">
+      <span class="footer-title">CONTACTO</span>
+      <a href="https://wa.me/542212014530" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="https://www.instagram.com/intimatta.ar" target="_blank" rel="noopener">@intimatta.ar</a>
+      <a href="mailto:contacto@intimatta.com.ar">contacto@intimatta.com.ar</a>
+    </div>
+  </div>
+</footer>
+
+<div id="cart-root"></div>
+<script src="app.js?v=22" defer></script>
+</body>
+</html>
