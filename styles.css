@@ -334,3 +334,9 @@ a:hover { color: var(--ink); }
   .brand-text { overflow: hidden; }
   .tagline { overflow: hidden; text-overflow: ellipsis; }
 }
+@media (max-width: 359px) {
+  .header-row > .brand .brand-logo { width: 34px; height: 41px; }
+  .header-row > .brand .wordmark { font-size: 21px; }
+  .header-row { gap: 8px; }
+  .cart-btn { padding: 0 10px; }
+}
