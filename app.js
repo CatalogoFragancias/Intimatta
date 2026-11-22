@@ -17,9 +17,9 @@
     // Cosmética íntima (portada)
     { name: 'Aceite corporal Hot Inevitable 125 ml', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE CORPORAL', img: 'img/cosmetica/aceite-hot-inevitable.jpg', icon: 'oil', price: 17000, old: 18000, stock: true, desc: 'Aceite corporal con efecto calor para masajes.' },
     { name: 'Aceite para masajes Natural 60 ml', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE DE MASAJE', img: 'img/cosmetica/aceite-natural-60ml.jpg', icon: 'oil', price: 4500, old: 5000, stock: true, desc: 'Aceite neutro para masajes relajantes.' },
-    { name: 'Aceite para masajes Uva 60 ml', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE DE MASAJE', icon: 'oil', price: 3500, old: 5000, stock: true, desc: 'Aceite de masaje con aroma a uva.' },
-    { name: 'Gel íntimo Warming 120 cc', line: 'cosmetica', group: 'Cuidado íntimo', label: 'GEL ÍNTIMO', icon: 'gel', price: 5000, old: 6000, stock: false, desc: 'Gel íntimo a base de agua con efecto calor.' },
-    { name: 'Magic Dual — aceite para masajes y gel íntimo', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE 2 EN 1', icon: 'oil', price: 13000, old: 20000, stock: false, desc: 'Aceite para masajes que también funciona como gel íntimo.' },
+    { name: 'Aceite para masajes Uva 60 ml', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE DE MASAJE', img: 'img/cosmetica/aceite-uva-60ml.jpg', icon: 'oil', price: 3500, old: 5000, stock: true, desc: 'Aceite de masaje con aroma a uva.' },
+    { name: 'Gel íntimo Warming 120 cc', line: 'cosmetica', group: 'Cuidado íntimo', label: 'GEL ÍNTIMO', img: 'img/cosmetica/gel-warming-120cc.jpg', icon: 'gel', price: 5000, old: 6000, stock: false, desc: 'Gel íntimo a base de agua con efecto calor.' },
+    { name: 'Magic Dual — aceite para masajes y gel íntimo', line: 'cosmetica', group: 'Cuidado íntimo', label: 'ACEITE 2 EN 1', img: 'img/cosmetica/magic-dual.jpg', icon: 'oil', price: 13000, old: 20000, stock: false, desc: 'Aceite para masajes que también funciona como gel íntimo.' },
 
     // Línea +18 (solo en mas18.html)
     { name: 'Vibrador Punto G - Gluxe - Control Por Aplicación', line: 'adulto', cat: 'Vibradores', price: 85000, old: 118000, stock: true },
