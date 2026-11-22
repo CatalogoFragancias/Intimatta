@@ -306,6 +306,8 @@ a:hover { color: var(--ink); }
 .admin-promos .small, .admin-promos .product-cat { margin: 0; }
 .admin-promos .admin-inline label { flex: 1 1 180px; }
 .admin-grid4 label { flex: 1 1 110px !important; }
+.admin-cats { justify-content: flex-start; margin: 0 0 12px; gap: 8px; }
+.admin-cats .chip { min-height: 40px; padding: 0 16px; font-size: 14px; }
 .admin-products-title { margin-top: 26px; margin-bottom: 10px; }
 .admin-inline label { flex: 1 1 140px; }
 .admin-bar { position: sticky; bottom: 0; margin: 0 -20px; padding: 14px 20px; padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--cream); border-top: 1px solid var(--ink); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }

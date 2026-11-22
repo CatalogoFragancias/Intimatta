@@ -585,6 +585,7 @@
   try { adminPw = sessionStorage.getItem(ADMIN_KEY) || ''; } catch (e) {}
   var draft = {};
   var sdraft = null;
+  var adminCat = 'todos';
   var dirty = false;
   var adminEl = document.createElement('div');
   adminEl.className = 'overlay admin-overlay'; adminEl.id = 'admin'; adminEl.hidden = true;
@@ -620,6 +621,13 @@
           '<p class="small">Se descuenta del precio de cada producto de esa sección y se muestra el precio original tachado.</p>' +
         '</section>' +
         '<p class="eyebrow admin-products-title">PRODUCTOS</p>' +
+        '<div class="chips admin-cats" id="admin-cats">' +
+          '<button type="button" class="chip active" data-cat="todos" aria-pressed="true">Todos</button>' +
+          '<button type="button" class="chip" data-cat="perfumes" aria-pressed="false">Perfumes</button>' +
+          '<button type="button" class="chip" data-cat="cosmetica" aria-pressed="false">Cosmética</button>' +
+          '<button type="button" class="chip" data-cat="lenceria" aria-pressed="false">Lencería</button>' +
+          '<button type="button" class="chip" data-cat="adulto" aria-pressed="false">Línea +18</button>' +
+        '</div>' +
         '<input type="search" id="admin-search" class="admin-search" placeholder="Buscar producto…" aria-label="Buscar producto">' +
         '<div id="admin-list" class="admin-list"></div>' +
         '<div class="admin-bar">' +
@@ -667,6 +675,7 @@
     var q = ($('#admin-search').value || '').toLowerCase();
     $('#admin-list').innerHTML = PRODUCTS.map(function (p, i) {
       var d = draft[p.key];
+      if (adminCat !== 'todos' && sectionOf(p) !== adminCat) return '';
       if (q && (d.name + ' ' + adminLabel(p)).toLowerCase().indexOf(q) < 0) return '';
       return '<div class="admin-row" data-i="' + i + '">' +
         '<div class="admin-fields">' +
@@ -742,6 +751,12 @@
     if (t.hasAttribute('data-close-admin')) closeAdmin();
   });
   $('#admin-search').addEventListener('input', renderAdminList);
+  $('#admin-cats').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-cat]'); if (!b) return;
+    adminCat = b.getAttribute('data-cat');
+    $$('[data-cat]', $('#admin-cats')).forEach(function (x) { var on = x === b; x.classList.toggle('active', on); x.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+    renderAdminList();
+  });
   $('#admin-promos').addEventListener('input', function (e) {
     var k = e.target.getAttribute('data-s'); if (!k || !sdraft) return;
     if (k === 'promoOn') sdraft.promoOn = e.target.checked;
