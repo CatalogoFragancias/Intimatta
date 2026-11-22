@@ -171,7 +171,15 @@ a:hover { color: var(--ink); }
 .manifesto .spaced { color: var(--rose); letter-spacing: .6em; }
 .manifesto p { margin: 0; font-family: var(--serif); font-weight: 600; font-size: 48px; font-size: clamp(36px, 6vw, 58px); line-height: 1.1; }
 .how { background: var(--sand); }
-.how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 36px; padding-top: 72px; padding-bottom: 72px; }
+.how > .wrap { padding-top: 72px; padding-bottom: 72px; display: flex; flex-direction: column; gap: 40px; }
+.how-head { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.how-title { margin: 0; font-family: var(--serif); font-weight: 600; font-size: 40px; font-size: clamp(30px, 6vw, 44px); }
+.how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 36px; }
+.how-promos { border: 1px solid var(--ink); background: var(--cream-2); padding: 26px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+.how-promos ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 28px; }
+.how-promos li { font-size: 16px; color: var(--muted); }
+.how-promos li strong { color: var(--ink); }
+.how-promos li::before { content: '✦ '; color: var(--rose); }
 .how-grid div { display: flex; flex-direction: column; gap: 10px; }
 .roman { font-family: var(--serif); font-weight: 600; font-size: 40px; color: var(--rose); }
 .how h3 { margin: 0; font-family: var(--serif); font-weight: 600; font-size: 26px; }

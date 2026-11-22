@@ -437,12 +437,17 @@
       bar.innerHTML = SETTINGS.promoText ? esc(SETTINGS.promoText)
         : autoPromoText().map(esc).join(' <span class="pink">✦</span> ');
     }
-    var h = $('#how-pay-title'), pp = $('#how-pay-text');
-    if (h && pp) {
-      var c = SETTINGS.cuotas, t = SETTINGS.transferencia;
-      h.textContent = c > 0 ? c + ' cuotas sin interés' : (t > 0 ? t + '% off con transferencia' : 'Pagá como quieras');
-      pp.textContent = c > 0 && t > 0 ? 'O ' + t + '% de descuento pagando con transferencia.'
-        : (c > 0 ? 'Con tarjeta de crédito.' : (t > 0 ? 'Pagando con transferencia bancaria.' : 'Coordinamos el pago por WhatsApp.'));
+    // Bloque "Promociones vigentes" de Cómo comprar: muestra lo que se configura en el panel
+    var list = $('#how-promos-list');
+    if (list) {
+      var items = [];
+      if (SETTINGS.promoText) items.push('<strong>' + esc(SETTINGS.promoText) + '</strong>');
+      if (SETTINGS.cuotas > 0) items.push('<strong>' + SETTINGS.cuotas + ' cuotas sin interés</strong>');
+      if (SETTINGS.transferencia > 0) items.push('<strong>' + SETTINGS.transferencia + '% off</strong> pagando con transferencia');
+      var d = SETTINGS.descuentos, names = { perfumes: 'perfumes', cosmetica: 'cosmética íntima', lenceria: 'lencería', adulto: 'la Línea +18' };
+      Object.keys(names).forEach(function (k) { if (d[k] > 0) items.push('<strong>' + d[k] + '% off</strong> en ' + names[k]); });
+      items.push('<strong>Envío discreto</strong> a todo el país');
+      list.innerHTML = items.map(function (x) { return '<li>' + x + '</li>'; }).join('');
     }
   }
 

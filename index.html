@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,600;0,6..96,700;1,6..96,500;1,6..96,600&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=10">
+<link rel="stylesheet" href="styles.css?v=11">
 </head>
 <body data-page="home">
 
@@ -96,10 +96,25 @@
   </section>
 
   <section id="como-comprar" class="how">
-    <div class="wrap how-grid">
-      <div><span class="roman">I</span><h3>Envío discreto</h3><p>Paquete neutro, sin logos ni descripción del contenido.</p></div>
-      <div><span class="roman">II</span><h3 id="how-pay-title">3 cuotas sin interés</h3><p id="how-pay-text">O 10% de descuento pagando con transferencia.</p></div>
-      <div><span class="roman">III</span><h3>Te asesoramos</h3><p>Escribinos por WhatsApp y te ayudamos a elegir tu fragancia.</p></div>
+    <div class="wrap">
+      <div class="how-head">
+        <p class="eyebrow">✦ CÓMO COMPRAR ✦</p>
+        <h2 class="how-title">Tu pedido en 4 pasos</h2>
+      </div>
+      <div class="how-grid">
+        <div><span class="roman">I</span><h3>Elegí tus productos</h3><p>Entrá a cada carta, mirá los productos y tocá «Agregar» para sumarlos al carrito.</p></div>
+        <div><span class="roman">II</span><h3>Enviá tu pedido</h3><p>Abrí el carrito, completá tus datos y tocá «Enviar pedido por WhatsApp». Se abre WhatsApp con tu pedido listo para mandar.</p></div>
+        <div><span class="roman">III</span><h3>Te llega la confirmación</h3><p>Recibís un mail de confirmación con el detalle de tu pedido en la dirección que cargaste.</p></div>
+        <div><span class="roman">IV</span><h3>Coordinamos con vos</h3><p>Nos contactamos por WhatsApp para coordinar el pago y el envío. Paquete neutro, sin logos ni descripción del contenido.</p></div>
+      </div>
+      <div class="how-promos" id="how-promos">
+        <p class="eyebrow">✦ PROMOCIONES VIGENTES ✦</p>
+        <ul id="how-promos-list">
+          <li><strong>3 cuotas sin interés</strong></li>
+          <li><strong>10% off</strong> pagando con transferencia</li>
+          <li><strong>Envío discreto</strong> a todo el país</li>
+        </ul>
+      </div>
     </div>
   </section>
   <section class="loco-strip">
@@ -162,6 +177,6 @@
 </footer>
 
 <div id="cart-root"></div>
-<script src="app.js?v=15" defer></script>
+<script src="app.js?v=16" defer></script>
 </body>
 </html>
