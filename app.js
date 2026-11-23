@@ -4,7 +4,7 @@
 
   var WHATSAPP = '542212014530';
   // Píxel de Meta (Facebook/Instagram Ads). Pegá acá el número del píxel para activarlo. Nunca se carga en la Línea +18.
-  var META_PIXEL_ID = '';
+  var META_PIXEL_ID = '1498910032128515';
 
   // price/old en pesos. price: null = precio a consultar.
   // line: 'perfume' | 'cosmetica' (se ven en la portada) | 'adulto' (solo en mas18.html)
